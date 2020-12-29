@@ -63,22 +63,27 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetMouseButtonDown(0))        //按下左键
         {
             startPos = Input.mousePosition;
-            
-            selectBox.SetActive(true);
+
+
+            selectBox.SetActive(true);     //开启选择框
         }
         if (Input.GetMouseButton(0))            //长按左键框选
         {
             
-            float x = Input.mousePosition.x - startPos.x;
-            float y = Input.mousePosition.y - startPos.y;
-            selectBox.transform.localPosition = new Vector3(x/2, y/2, 0);
-            selectBox.transform.localScale = new Vector3(x, y, 1);
+            float x = Input.mousePosition.x - startPos.x;           //框的宽度
+            float y = Input.mousePosition.y - startPos.y;           //框的长度
+            
+            selectBox.transform.localPosition = new Vector3(x /2 + startPos.x - UnityEngine.Screen.width/2 , y /2 + startPos.y - UnityEngine.Screen.height/2, 0);          //框的中心点：起点+框大小的一半-屏幕中心 
+            selectBox.transform.localScale = new Vector3(x, y, 1);                                        //框的大小
+            //input得到的屏幕坐标是以屏幕左下为原点，但selectBox的坐标是以屏幕中心为原点
         }
         if (Input.GetMouseButtonUp(0))          //抬起左键
         {
-            selectBox.SetActive(false);
+            selectBox.SetActive(false);         //关闭选框
+
             endPos = Input.mousePosition;
-            Checkbox();
+
+            Checkbox();  //调用框选函数
         }
         
     }

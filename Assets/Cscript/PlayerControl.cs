@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     //单例
-    public static PlayerControl _player;
+   public static PlayerControl _player;
    private void Awake()
     {
         _player = this;
@@ -24,7 +24,7 @@ public class PlayerControl : MonoBehaviour
     GameInfo playerInfo;                //玩家信息
     int playerNum;                      //玩家编号
 
-    
+    public GameObject selectBox;        //选框
 
 
 
@@ -35,6 +35,7 @@ public class PlayerControl : MonoBehaviour
     List<GameObject> selectObjList;
     void Start()
     {
+        
         playerName = "Player1";
 
         gameManage = transform.parent.gameObject.GetComponent<GameManage>();    //获取总信息类
@@ -62,9 +63,20 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetMouseButtonDown(0))        //按下左键
         {
             startPos = Input.mousePosition;
+            
+            selectBox.SetActive(true);
+        }
+        if (Input.GetMouseButton(0))            //长按左键框选
+        {
+            
+            float x = Input.mousePosition.x - startPos.x;
+            float y = Input.mousePosition.y - startPos.y;
+            selectBox.transform.localPosition = new Vector3(x/2, y/2, 0);
+            selectBox.transform.localScale = new Vector3(x, y, 1);
         }
         if (Input.GetMouseButtonUp(0))          //抬起左键
         {
+            selectBox.SetActive(false);
             endPos = Input.mousePosition;
             Checkbox();
         }

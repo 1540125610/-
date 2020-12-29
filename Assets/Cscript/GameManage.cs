@@ -16,7 +16,7 @@ public class GameManage : MonoBehaviour
 
     public List<GameInfo> playersInfos = new List<GameInfo>();
 
-
+    
     // Start is called before the first frame update
     void Start()
     {

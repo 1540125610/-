@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HumanControl : MonoBehaviour
 {
@@ -22,13 +23,15 @@ public class HumanControl : MonoBehaviour
 
 
 
-    //选中与非选中
-    public void OnSelected()
+    //开启选框
+    public void OnSelected(Color color)
     {
         isSelect = true;
+        canvas.GetComponentInChildren<Image>().color = color;   //改变选框颜色
         canvas.gameObject.SetActive(true);
     }
 
+    //关闭选框
     public void OffSelected()
     {
         isSelect = false;

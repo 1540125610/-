@@ -28,7 +28,7 @@ public class PlayerControl : MonoBehaviour
 
 
 
-    List<GameObject> chosenObj = new List<GameObject>();     //被选中的单位队列
+    List<GameObject> chosenObj = new List<GameObject>();     //当前选中的单位队列
 
     
 
@@ -59,51 +59,132 @@ public class PlayerControl : MonoBehaviour
     {
         AutoRefresh();      //一直刷新玩家信息
 
-        //框选
+
+        //鼠标操作
         if (Input.GetMouseButtonDown(0))        //按下左键
         {
+            RayDetection();
+            
+
+
+            //框选(按下左键)
             startPos = Input.mousePosition;
-
-
             selectBox.SetActive(true);     //开启选择框
         }
         if (Input.GetMouseButton(0))            //长按左键框选
         {
             
+
+
+
+            //框选
             float x = Input.mousePosition.x - startPos.x;           //框的宽度
             float y = Input.mousePosition.y - startPos.y;           //框的长度
+
+            //框的中心点：起点+框大小的一半-屏幕中心  注:input得到的屏幕坐标是以屏幕左下为原点，但selectBox的坐标是以屏幕中心为原点
+            selectBox.transform.localPosition = new Vector3(x /2 + startPos.x - UnityEngine.Screen.width/2 , y /2 + startPos.y - UnityEngine.Screen.height/2, 0);
             
-            selectBox.transform.localPosition = new Vector3(x /2 + startPos.x - UnityEngine.Screen.width/2 , y /2 + startPos.y - UnityEngine.Screen.height/2, 0);          //框的中心点：起点+框大小的一半-屏幕中心 
             selectBox.transform.localScale = new Vector3(x, y, 1);                                        //框的大小
-            //input得到的屏幕坐标是以屏幕左下为原点，但selectBox的坐标是以屏幕中心为原点
         }
         if (Input.GetMouseButtonUp(0))          //抬起左键
         {
-            selectBox.SetActive(false);         //关闭选框
 
+
+
+
+            //框选
+            selectBox.SetActive(false);         //关闭选框
             endPos = Input.mousePosition;
 
-            Checkbox();  //调用框选函数
+            //如果是框选则开启，不是则启动单点模式
+            if (endPos == startPos)         //单点模式 
+            {
+
+                if (hit.collider.gameObject.layer == 9)   //第九层是地面
+                {
+                    ChosenObjClaer();
+                }else if(hit.collider.gameObject.layer == 8)   //第八层是单位
+                {
+                    if (playerInfo.MilitaryUnits.Contains(hit.collider.gameObject) || playerInfo.BulidUnits.Contains(hit.collider.gameObject))        //是否是玩家人物单位
+                    {
+                        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))   //按下shift(添加单位)
+                        {
+                            if (!chosenObj.Contains(hit.collider.gameObject))          //不是已选择的目标
+                            {
+                                AddChosenObj(hit.collider.gameObject);
+                            }  
+                        }
+                        else if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))  // 按下ctrl(剔除单位)
+                        {
+                            if (chosenObj.Contains(hit.collider.gameObject))          //是已选择的目标
+                            {
+                                DeleteChosenObj(hit.collider.gameObject);
+                            }
+                        }
+                        else
+                        {
+                            ChosenObjClaer();           //清理已选择列表
+                            AddChosenObj(hit.collider.gameObject);
+                        }
+                    }
+                    
+                }
+            }
+            else                //框选模式
+            {
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))   //按下shift(添加单位)
+                {
+                    Checkbox(true);          //调用框选函数
+                }
+                else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))  // 按下ctrl(剔除单位)
+                {
+                    Checkbox(false);          //调用框选函数
+                }
+                else
+                {
+                    ChosenObjClaer();    //清理已选择列表
+                    Checkbox(true);          //调用框选函数
+                }
+
+            }
+        }
+
+
+
+        if(chosenObj.Count != 0)
+        {
+            Debug.Log(chosenObj.Count);
         }
         
     }
 
     //框选函数
-    private void Checkbox()
+    private void Checkbox(bool isAdd)
     {
-        Vector3 lowerLeftPos = new Vector3(Mathf.Min(startPos.x, endPos.x), Mathf.Min(startPos.y, endPos.y), 0);        //框左下角点
+        Vector3 lowerLeftPos = new Vector3(Mathf.Min(startPos.x, endPos.x), Mathf.Min(startPos.y, endPos.y), 0);         //框左下角点
         Vector3 upperRightPos = new Vector3(Mathf.Max(startPos.x, endPos.x), Mathf.Max(startPos.y, endPos.y), 0);        //框右上角点
-
-        ChosenObjClaer();              //先清理掉已经选着的东西
+        
         foreach (GameObject unit in playerInfo.MilitaryUnits)
         {
             Vector3 unitScreenPos = Camera.main.WorldToScreenPoint(unit.transform.position);            //作战单位的世界坐标转屏幕坐标
             if (unitScreenPos.x > lowerLeftPos.x && unitScreenPos.y > lowerLeftPos.y && unitScreenPos.x< upperRightPos.x && unitScreenPos.y < upperRightPos.y)          //是否在框选范围内
             {
-                chosenObj.Add(unit);
+                if (isAdd)
+                {
+                    if (!chosenObj.Contains(unit))          //不是已选择的目标
+                    {
+                        AddChosenObj(unit);                //添加符合条件的单位
+                    }
+                }
+                else
+                {
+                    if (chosenObj.Contains(unit))          //是已选择的目标
+                    {
+                        DeleteChosenObj(unit);                //删除符合条件的单位
+                    }
+                }
             }
-        }
-        OnChosenObj();                  //开启选择框
+        } 
     }
 
     //射线检测
@@ -120,22 +201,27 @@ public class PlayerControl : MonoBehaviour
     }
 
     
+    //清理所有选中
     private void ChosenObjClaer()
     {
         foreach(GameObject a in chosenObj)
         {
             a.GetComponent<HumanControl>().OffSelected();       //关闭选择框
         }
-        chosenObj.Clear();
+        chosenObj.Clear();              //清理数组
     }
 
-
-    //框选单位添加完毕
-    private void OnChosenObj()
+    //选择时添加单位
+    private void AddChosenObj(GameObject addObj)
     {
-        foreach (GameObject a in chosenObj)
-        {
-            a.GetComponent<HumanControl>().OnSelected();       //开启选择框
-        }
+        chosenObj.Add(addObj);
+        addObj.GetComponent<HumanControl>().OnSelected(Color.green);       //开启选择框
+    }
+
+    //选择时剔除单位
+    private void DeleteChosenObj(GameObject addObj)
+    {
+        addObj.GetComponent<HumanControl>().OffSelected();       //关闭选择框
+        chosenObj.Remove(addObj);
     }
 }

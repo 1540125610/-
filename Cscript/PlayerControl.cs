@@ -28,11 +28,11 @@ public class PlayerControl : MonoBehaviour
 
 
 
-    List<GameObject> chosenObj = new List<GameObject>();     //当前选中的单位队列
+    List<GameObject> chosenObj = new List<GameObject>();            //当前选中的单位队列
+    GameObject chosenOtherPlayerObj = null;                         //选到了其他玩家的单位
 
     
 
-    List<GameObject> selectObjList;
     void Start()
     {
         
@@ -97,7 +97,7 @@ public class PlayerControl : MonoBehaviour
             endPos = Input.mousePosition;
 
             //如果是框选则开启，不是则启动单点模式
-            if (endPos == startPos)         //单点模式 
+            if (endPos == startPos)                     //单点模式 
             {
 
                 if (hit.collider.gameObject.layer == 9)   //第九层是地面
@@ -127,7 +127,19 @@ public class PlayerControl : MonoBehaviour
                             AddChosenObj(hit.collider.gameObject);
                         }
                     }
-                    
+                    else                                        //选中其他玩家的单位
+                    {
+                        if (!(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))  // 非按下shift和ctrl键的情况下
+                        {
+
+                            ChosenObjClaer();           //清理已选择列表       
+
+
+                            chosenOtherPlayerObj = hit.collider.gameObject;
+                            chosenOtherPlayerObj.GetComponent<HumanControl>().OnSelected(Color.red);       //开启其选择框
+
+                        }
+                    }
                 }
             }
             else                //框选模式
@@ -142,20 +154,16 @@ public class PlayerControl : MonoBehaviour
                 }
                 else
                 {
-                    ChosenObjClaer();    //清理已选择列表
+                    ChosenObjClaer();        //清理已选择列表
                     Checkbox(true);          //调用框选函数
                 }
-
             }
         }
 
 
 
-        if(chosenObj.Count != 0)
-        {
-            Debug.Log(chosenObj.Count);
-        }
-        
+        int i = Random.Range(0, 5);
+        Debug.Log(i);
     }
 
     //框选函数
@@ -163,12 +171,14 @@ public class PlayerControl : MonoBehaviour
     {
         Vector3 lowerLeftPos = new Vector3(Mathf.Min(startPos.x, endPos.x), Mathf.Min(startPos.y, endPos.y), 0);         //框左下角点
         Vector3 upperRightPos = new Vector3(Mathf.Max(startPos.x, endPos.x), Mathf.Max(startPos.y, endPos.y), 0);        //框右上角点
-        
+
+
         foreach (GameObject unit in playerInfo.MilitaryUnits)
         {
             Vector3 unitScreenPos = Camera.main.WorldToScreenPoint(unit.transform.position);            //作战单位的世界坐标转屏幕坐标
             if (unitScreenPos.x > lowerLeftPos.x && unitScreenPos.y > lowerLeftPos.y && unitScreenPos.x< upperRightPos.x && unitScreenPos.y < upperRightPos.y)          //是否在框选范围内
             {
+
                 if (isAdd)
                 {
                     if (!chosenObj.Contains(unit))          //不是已选择的目标
@@ -204,11 +214,21 @@ public class PlayerControl : MonoBehaviour
     //清理所有选中
     private void ChosenObjClaer()
     {
-        foreach(GameObject a in chosenObj)
+        if(chosenObj.Count != 0)            //选中的是自己单位
         {
-            a.GetComponent<HumanControl>().OffSelected();       //关闭选择框
+            foreach (GameObject a in chosenObj)
+            {
+                a.GetComponent<HumanControl>().OffSelected();       //关闭选择框
+            }
+            chosenObj.Clear();              //清理数组
         }
-        chosenObj.Clear();              //清理数组
+        
+
+        if (chosenOtherPlayerObj)           //如果是选中敌人单位
+        {
+            chosenOtherPlayerObj.GetComponent<HumanControl>().OffSelected();
+            chosenOtherPlayerObj = null;
+        }
     }
 
     //选择时添加单位

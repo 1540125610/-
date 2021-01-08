@@ -2,23 +2,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 public class HumanControl : MonoBehaviour
 {
+    private Camera mainCamara;
     private bool isSelect = false;
     private Canvas canvas;
-    // Start is called before the first frame update
+    
+    private NavMeshAgent agent;     //设置导航代理
+    enum state
+    {
+        Stand,    //待机
+        Move,     //移动
+        Pursue,   //追击
+        Attack,   //攻击
+        Die,      //阵亡
+    }
+    state humanState;
     void Start()
     {
+        agent = GetComponent<NavMeshAgent>();
+        mainCamara = Camera.main;
         //拿到是否被选中的圈，并关闭它
         canvas = GetComponentInChildren<Canvas>();
         canvas.gameObject.SetActive(false);
+
+        humanState = state.Stand;    //初始状态为待机
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
+        switch (humanState)
+        {
+            case state.Stand:
+                Stand();
+                break;
+            case state.Pursue:
+                Pursue();
+                break;
+            case state.Move:
+                Move();
+                break;
+            case state.Attack:
+                Attack();
+                break;
+            case state.Die:
+                Die();
+                break;
 
+
+
+        }
     }
 
 
@@ -36,5 +72,56 @@ public class HumanControl : MonoBehaviour
     {
         isSelect = false;
         canvas.gameObject.SetActive(false);
+    }
+
+    void Stand()
+    {
+        if(isSelect&&Input.GetMouseButtonDown(1))
+        {
+            Ray ray = mainCamara.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit = new RaycastHit();
+            if(Physics.Raycast(ray,out hit))
+            {
+                if (hit.collider.tag == "Ground")
+                {
+                    agent.SetDestination(hit.point);   //设置寻路目标
+                    humanState = state.Move;
+                }
+            }
+            
+        }
+    }
+
+    void Move()
+    {
+        
+        if (isSelect && Input.GetMouseButtonDown(1))
+        {
+            Ray ray = mainCamara.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit = new RaycastHit();
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.collider.tag == "Ground")
+                {
+                    agent.SetDestination(hit.point);
+                }
+            }
+
+        }
+    }
+
+    void Pursue()
+    {
+
+    }
+
+    void Attack()
+    {
+
+    }
+
+    void Die()
+    {
+
     }
 }

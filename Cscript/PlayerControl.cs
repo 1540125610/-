@@ -163,7 +163,7 @@ public class PlayerControl : MonoBehaviour
 
 
         int i = Random.Range(0, 5);
-        Debug.Log(i);
+        //Debug.Log(i);
     }
 
     //框选函数

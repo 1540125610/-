@@ -4,31 +4,39 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    private Vector3 startPosition;
-    private Vector3 cameraPosition;
+    private float height;
+    private float width;
     private Camera c;
     private float mouseWheel;
     private int maxView = 30;
     private int minView = 3;
-    private float slideSpeed = 30;
+    private float slideSpeed = 30;   //镜头缩放速度
+    private float moveSpeed = 30;    //镜头移动速度
     void Start()
     {
+        height = UnityEngine.Screen.height;
+        width = UnityEngine.Screen.width;
         c = GetComponent<Camera>();
     }
 
     
     void Update()
     {
-        if(Input.GetMouseButtonDown(2))
+        if(Input.mousePosition.x<=0)
         {
-            startPosition = Input.mousePosition;
-            cameraPosition = transform.position;
+            transform.Translate(Vector3.left*Time.deltaTime*moveSpeed);
         }
-        if(Input.GetMouseButton(2))
+        if (Input.mousePosition.x >= width-1)
         {
-            float x = (Input.mousePosition.x - startPosition.x)/20;
-            float z = (Input.mousePosition.y - startPosition.y)/20;
-            transform.position = new Vector3(cameraPosition.x - x, cameraPosition.y, cameraPosition.z - z);
+            transform.Translate(Vector3.right * Time.deltaTime*moveSpeed);
+        }
+        if (Input.mousePosition.y <= 0)
+        {
+            transform.Translate(Vector3.down * Time.deltaTime*moveSpeed);
+        }
+        if (Input.mousePosition.y >= height)
+        {
+            transform.Translate(Vector3.up * Time.deltaTime*moveSpeed);
         }
 
         mouseWheel = Input.GetAxis("Mouse ScrollWheel");

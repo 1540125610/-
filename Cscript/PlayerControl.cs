@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class PlayerControl : MonoBehaviour
     Ray ray;            //射线
     RaycastHit hit;     //射线检测结果
 
+    Vector3 startPosWorld;  //鼠标左键按下位置(世界坐标)
     Vector3 startPos;   //鼠标左键按下位置
     Vector3 endPos;     //鼠标左键抬起位置
 
@@ -60,6 +62,7 @@ public class PlayerControl : MonoBehaviour
         AutoRefresh();      //一直刷新玩家信息
 
 
+
         //鼠标操作
         if (Input.GetMouseButtonDown(0))        //按下左键
         {
@@ -68,9 +71,20 @@ public class PlayerControl : MonoBehaviour
 
 
             //框选(按下左键)
-            startPos = Input.mousePosition;
+            startPosWorld = hit.point;    //记录左键按下时到场景的世界坐标
+            
             selectBox.SetActive(true);     //开启选择框
         }
+
+        startPos = Camera.main.WorldToScreenPoint(startPosWorld);               //将左键记录的世界坐标修改为屏幕坐标
+        
+        startPos.z = 0;                                                         //此时的z值为世界坐标到屏幕坐标的z值距离，需要清零
+
+        startPos.x = (int)(startPos.x + 0.1);                   //将屏幕坐标四舍五入(x,y 值为X.000X或者 X.9999X)
+        startPos.y = (int)(startPos.y + 0.1);
+
+
+
         if (Input.GetMouseButton(0))            //长按左键框选
         {
             
@@ -96,10 +110,13 @@ public class PlayerControl : MonoBehaviour
             selectBox.SetActive(false);         //关闭选框
             endPos = Input.mousePosition;
 
+
+
+
+
             //如果是框选则开启，不是则启动单点模式
             if (endPos == startPos)                     //单点模式 
             {
-
                 if (hit.collider.gameObject.layer == 9)   //第九层是地面
                 {
                     ChosenObjClaer();
@@ -162,8 +179,7 @@ public class PlayerControl : MonoBehaviour
 
 
 
-        int i = Random.Range(0, 5);
-        //Debug.Log(i);
+        
     }
 
     //框选函数

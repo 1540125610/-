@@ -62,6 +62,16 @@ public class PlayerControl : MonoBehaviour
         AutoRefresh();      //一直刷新玩家信息
 
 
+        if(Input.GetMouseButtonDown(1)&&chosenObj.Count!=0)   //按下鼠标右键移动
+        {
+            RayDetection();
+            Vector3 aimPoint = hit.point;
+            foreach(GameObject a in chosenObj)
+            {
+                a.GetComponent<HumanControl>().SetMove(aimPoint);
+            }
+        }
+
 
         //鼠标操作
         if (Input.GetMouseButtonDown(0))        //按下左键

@@ -7,9 +7,8 @@ using UnityEngine.AI;
 public class HumanControl : MonoBehaviour
 {
     private Camera mainCamara;
-    private bool isSelect = false;
     private Canvas canvas;
-    
+    private Vector3 aimPosition;
     private NavMeshAgent agent;     //设置导航代理
     enum state
     {
@@ -59,7 +58,6 @@ public class HumanControl : MonoBehaviour
     //开启选框
     public void OnSelected(Color color)
     {
-        isSelect = true;
         canvas.GetComponentInChildren<Image>().color = color;   //改变选框颜色
         canvas.gameObject.SetActive(true);
     }
@@ -67,44 +65,17 @@ public class HumanControl : MonoBehaviour
     //关闭选框
     public void OffSelected()
     {
-        isSelect = false;
         canvas.gameObject.SetActive(false);
     }
 
     void Stand()
     {
-        if(isSelect&&Input.GetMouseButtonDown(1))
-        {
-            Ray ray = mainCamara.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit = new RaycastHit();
-            if(Physics.Raycast(ray,out hit))
-            {
-                if (hit.collider.tag == "Ground")
-                {
-                    agent.SetDestination(hit.point);   //设置寻路目标
-                    humanState = state.Move;
-                }
-            }
-            
-        }
+
     }
 
     void Move()
     {
-        
-        if (isSelect && Input.GetMouseButtonDown(1))
-        {
-            Ray ray = mainCamara.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit = new RaycastHit();
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider.tag == "Ground")
-                {
-                    agent.SetDestination(hit.point);
-                }
-            }
-
-        }
+        agent.SetDestination(aimPosition);
     }
 
     void Pursue()
@@ -120,5 +91,14 @@ public class HumanControl : MonoBehaviour
     void Die()
     {
 
+    }
+
+    public void SetMove(Vector3 aimPoint)
+    {
+        if(humanState!=state.Move)
+        {
+            humanState = state.Move;
+        }
+        aimPosition = aimPoint;
     }
 }

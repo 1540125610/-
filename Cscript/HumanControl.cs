@@ -36,24 +36,21 @@ public class HumanControl : MonoBehaviour
     {
         switch (humanState)
         {
-            case state.Stand:
+            case state.Stand:       //待机
                 Stand();
                 break;
-            case state.Pursue:
+            case state.Pursue:      //
                 Pursue();
                 break;
-            case state.Move:
+            case state.Move:        //移动
                 Move();
                 break;
-            case state.Attack:
+            case state.Attack:      //攻击
                 Attack();
                 break;
-            case state.Die:
+            case state.Die:         //死亡
                 Die();
                 break;
-
-
-
         }
     }
 

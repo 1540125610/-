@@ -88,9 +88,6 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetMouseButton(0))            //长按左键框选
         {
             
-
-
-
             //框选
             float x = Input.mousePosition.x - startPos.x;           //框的宽度
             float y = Input.mousePosition.y - startPos.y;           //框的长度
@@ -103,15 +100,9 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetMouseButtonUp(0))          //抬起左键
         {
 
-
-
-
             //框选
             selectBox.SetActive(false);         //关闭选框
             endPos = Input.mousePosition;
-
-
-
 
 
             //如果是框选则开启，不是则启动单点模式
@@ -217,7 +208,8 @@ public class PlayerControl : MonoBehaviour
     public void RayDetection()      
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);        //摄像机发出射线
-        Physics.Raycast(ray, out hit);
+        
+        Physics.Raycast(ray, out hit,1000,1<<8 | 1<<9);                 //检测到单位或者地面
     }
 
     //刷新玩家信息

@@ -10,7 +10,15 @@ public class HumanControl : MonoBehaviour
     private Canvas canvas;
     private Vector3 aimPosition;
     private NavMeshAgent agent;     //设置导航代理
-    enum state
+    public GameObject currentEnemy;  //当前攻击目标
+    public string playerName;  //所属玩家名称
+    public GameObject basicBullet;  //子弹
+    public bool isAttack=false;
+
+
+    public int maxHp;      //最大生命值
+    private int currentHp;  //当前生命值
+     enum state
     {
         Stand,    //待机
         Move,     //移动
@@ -28,6 +36,7 @@ public class HumanControl : MonoBehaviour
         canvas.gameObject.SetActive(false);
 
         humanState = state.Stand;    //初始状态为待机
+        currentHp = maxHp;
     }
 
     
@@ -38,7 +47,7 @@ public class HumanControl : MonoBehaviour
             case state.Stand:       //待机
                 Stand();
                 break;
-            case state.Pursue:      //
+            case state.Pursue:      //追击
                 Pursue();
                 break;
             case state.Move:        //移动
@@ -51,6 +60,24 @@ public class HumanControl : MonoBehaviour
                 Die();
                 break;
         }
+        if(Input.GetKeyDown(KeyCode.S))    //按下“S”键进入待机状态
+        {
+            StopCoroutine("OnAttack");
+            isAttack=false;
+            agent.SetDestination(transform.position);
+            humanState = state.Stand;
+        }
+
+        if(currentHp<=0)
+        {
+            humanState = state.Die;
+        }
+
+        if(currentEnemy ==null)      //攻击目标死亡时或者没有攻击目标停止攻击
+        {
+            StopCoroutine("OnAttack");
+        }
+        //Debug.Log(humanState);
     }
 
 
@@ -70,7 +97,7 @@ public class HumanControl : MonoBehaviour
 
     void Stand()
     {
-
+        
     }
 
     void Move()
@@ -80,25 +107,63 @@ public class HumanControl : MonoBehaviour
 
     void Pursue()
     {
-
+        if (currentEnemy != null)
+        {
+            agent.SetDestination(currentEnemy.transform.position);
+        }
     }
 
     void Attack()
     {
+        if(!isAttack)
+        {
+            isAttack = true;
+            StartCoroutine("OnAttack");
+            
+        }
 
     }
 
     void Die()
     {
-
+        Destroy(gameObject);
     }
 
-    public void SetMove(Vector3 aimPoint)
+    public void SetMove(Vector3 aimPoint)      //设置移动目的地
     {
         if(humanState!=state.Move)
         {
             humanState = state.Move;
         }
         aimPosition = aimPoint;
+    }
+
+    public void SetPursue()              //设置追击目标
+    {
+        humanState = state.Pursue;
+    }
+    public void SetEnemy(GameObject enemy)     //设置攻击目标
+    {
+        if (currentEnemy == null)
+        {
+            currentEnemy = enemy;
+        }
+        humanState = state.Attack;
+    }
+
+
+    public void GetHurt(int damage)     //受到攻击
+    {
+        currentHp -= damage;
+    }
+    IEnumerator OnAttack()     //攻击协程
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(1f);
+            GameObject bullet = Instantiate(basicBullet, transform.position, Quaternion.identity);
+            bullet.GetComponent<Bullet>().aim = currentEnemy;
+        }
+
     }
 }

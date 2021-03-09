@@ -12,12 +12,13 @@ public class HumanControl : MonoBehaviour
     private NavMeshAgent agent;     //设置导航代理
     public GameObject currentEnemy;  //当前攻击目标
     public string playerName;  //所属玩家名称
-    public GameObject basicBullet;  //子弹
     public bool isAttack=false;
 
-
+    public int attack;      //攻击力
     public int maxHp;      //最大生命值
     private int currentHp;  //当前生命值
+
+    private Animator ani;
      enum state
     {
         Stand,    //待机
@@ -29,6 +30,7 @@ public class HumanControl : MonoBehaviour
     state humanState;
     void Start()
     {
+        ani = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         mainCamara = Camera.main;
         //拿到是否被选中的圈，并关闭它
@@ -97,16 +99,34 @@ public class HumanControl : MonoBehaviour
 
     void Stand()
     {
-        
+        if (!ani.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        {
+            ani.SetBool("isAttack", false);
+            ani.SetBool("isWalk", false);
+        }
     }
 
     void Move()
     {
+        if(!ani.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+        {
+            ani.SetBool("isWalk", true);
+            ani.SetBool("isAttack", false);
+        }
+        isAttack = false;
         agent.SetDestination(aimPosition);
+        
     }
 
     void Pursue()
     {
+        StopCoroutine("OnAttack");
+        isAttack = false;
+        if (!ani.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+        {
+            ani.SetBool("isWalk", true);
+            ani.SetBool("isAttack", false);
+        }
         if (currentEnemy != null)
         {
             agent.SetDestination(currentEnemy.transform.position);
@@ -115,18 +135,26 @@ public class HumanControl : MonoBehaviour
 
     void Attack()
     {
-        if(!isAttack)
+        transform.LookAt(currentEnemy.transform);
+        if (!ani.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            ani.SetBool("isAttack", true);
+        }
+        if (!isAttack)
         {
             isAttack = true;
             StartCoroutine("OnAttack");
             
         }
-
+        
     }
 
     void Die()
     {
-        Destroy(gameObject);
+        if (!ani.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+        {
+            ani.SetTrigger("die");
+        }
     }
 
     public void SetMove(Vector3 aimPoint)      //设置移动目的地
@@ -150,7 +178,10 @@ public class HumanControl : MonoBehaviour
         }
         humanState = state.Attack;
     }
-
+    public void Died()
+    {
+        Destroy(gameObject);
+    }
 
     public void GetHurt(int damage)     //受到攻击
     {
@@ -161,8 +192,7 @@ public class HumanControl : MonoBehaviour
         while(true)
         {
             yield return new WaitForSeconds(1f);
-            GameObject bullet = Instantiate(basicBullet, transform.position, Quaternion.identity);
-            bullet.GetComponent<Bullet>().aim = currentEnemy;
+            currentEnemy.GetComponent<HumanControl>().GetHurt(attack);
         }
 
     }

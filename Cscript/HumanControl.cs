@@ -135,7 +135,14 @@ public class HumanControl : MonoBehaviour
 
     void Attack()
     {
-        transform.LookAt(currentEnemy.transform);
+        if (currentEnemy == null)
+        {
+            humanState = state.Stand;
+        }
+        else
+        {
+            transform.LookAt(currentEnemy.transform);
+        }
         if (!ani.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
         {
             ani.SetBool("isAttack", true);

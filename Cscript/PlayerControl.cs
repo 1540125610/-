@@ -25,14 +25,12 @@ public class PlayerControl : MonoBehaviour
     GameManage gameManage;              //总信息类
     GameInfo playerInfo;                //玩家信息
     int playerNum;                      //玩家编号
+    GridsControl gridsControl;          //网格控制器
 
     public GameObject selectBox;        //选框
 
-
-
     List<GameObject> chosenObj = new List<GameObject>();            //当前选中的单位队列
     GameObject chosenOtherPlayerObj = null;                         //选到了其他玩家的单位
-
     
 
     void Start()
@@ -41,7 +39,7 @@ public class PlayerControl : MonoBehaviour
         playerName = "Player1";
 
         gameManage = transform.parent.gameObject.GetComponent<GameManage>();    //获取总信息类
-
+        gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();    //获取总信息类
 
         //查找玩家在总玩家里的编号
         int num =0;
@@ -61,19 +59,17 @@ public class PlayerControl : MonoBehaviour
     {
         AutoRefresh();      //一直刷新玩家信息
 
-
-        if(Input.GetMouseButtonDown(1)&&chosenObj.Count!=0)   //按下鼠标右键移动
+        //鼠标右键发出移动命令
+        if (Input.GetMouseButtonDown(1)&&chosenObj.Count!=0)   
         {
             RayDetection();
-            Vector3 aimPoint = hit.point;
-            foreach(GameObject a in chosenObj)
-            {
-                a.GetComponent<HumanControl>().SetMove(aimPoint);
-            }
+            Vector3 aimPoint = hit.point;           //获得地面点
+            gridsControl.ToAim(aimPoint, chosenObj);
+            
         }
 
 
-        //鼠标操作
+        //鼠标左键操作
         if (Input.GetMouseButtonDown(0))        //按下左键
         {
             RayDetection();
@@ -219,7 +215,7 @@ public class PlayerControl : MonoBehaviour
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);        //摄像机发出射线
         
-        Physics.Raycast(ray, out hit,1000,1<<8 | 1<<9);                 //检测到单位或者地面
+        Physics.Raycast(ray, out hit,1000, 1<<9);                 //检测到地面
     }
 
     //刷新玩家信息
@@ -262,4 +258,6 @@ public class PlayerControl : MonoBehaviour
         addObj.GetComponent<HumanControl>().OffSelected();       //关闭选择框
         chosenObj.Remove(addObj);
     }
+
+    
 }

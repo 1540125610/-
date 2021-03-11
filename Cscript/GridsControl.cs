@@ -8,6 +8,14 @@ public class GridsControl : MonoBehaviour
     public GameObject Grids;            //网格汇总的父物体
     public GridScript[] gridScripts;    //所有网格的脚本
 
+    public struct objGo 
+    {
+        bool used;
+        GameObject[] Objects;
+        Vector3 aimPoint;
+        GridScript aimGrid;
+    }
+
     private void Awake()
     {
         gridScripts = new GridScript[2500];     //2500个格子
@@ -26,10 +34,35 @@ public class GridsControl : MonoBehaviour
                 
             gridScripts[i] = newGrid.GetComponent<GridScript>();        //将其脚本列入脚本汇总
         }
+
+        List<objGo>[] objsGo = new List<objGo>[1000];           //默认1k个地图
     }
 
     void Start()
     {
         
+    }
+
+    //所有选中单位前往某个位置
+    public void ToAim(Vector3 aimPoint,List<GameObject> chosenObj)
+    {
+        PosToGrid(aimPoint);            //获得网格
+
+
+
+        //给每个单位发布出发命令
+        foreach (GameObject a in chosenObj)
+        {
+            a.GetComponent<HumanControl>().SetMove(aimPoint);
+        }
+    }
+
+
+    //获得地面点的网格
+    private GridScript PosToGrid(Vector3 pos)
+    {
+        Collider[] collidedObj = Physics.OverlapSphere(pos, 0.01f, 1 << 10);      //创建球型碰撞(位置，大小，层数)
+        GridScript aim = collidedObj[0].GetComponent<GridScript>();             //获得网格上的脚本
+        return aim;                                                             //返回脚本
     }
 }

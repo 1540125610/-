@@ -18,6 +18,10 @@ public class HumanControl : MonoBehaviour
     public int maxHp;      //最大生命值
     private int currentHp;  //当前生命值
 
+    public int mapIndex=-1;
+    public int dir = 0;
+
+
     private Animator ani;
      enum state
     {
@@ -79,7 +83,7 @@ public class HumanControl : MonoBehaviour
         {
             StopCoroutine("OnAttack");
         }
-        //Debug.Log(humanState);
+        
     }
 
 
@@ -106,7 +110,7 @@ public class HumanControl : MonoBehaviour
         }
     }
 
-    void Move()
+    void Move()             //移动
     {
         if(!ani.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
         {
@@ -114,7 +118,41 @@ public class HumanControl : MonoBehaviour
             ani.SetBool("isAttack", false);
         }
         isAttack = false;
-        agent.SetDestination(aimPosition);
+
+        int x=0, z=0;
+        switch (dir)
+        {
+            case 1:
+                x = -1; z = -1;
+                break;
+            case 2:
+                x = 0; z = -1; 
+                break;
+            case 3:
+                x = 1; z = -1;
+                break;
+            case 4:
+                x = -1; z = 0;
+                break;
+            case 5:
+                x = 0; z = 0;
+                break;
+            case 6:
+                x = 1; z = 0;
+                break;
+            case 7:
+                x = -1; z = 1;
+                break;
+            case 8:
+                x = 0; z = 1;
+                break;
+            case 9:
+                x = 1; z = 1;
+                break;
+        }
+        Vector3 direcion = new Vector3(x, 0, z);
+        transform.Translate(direcion.normalized *Time.deltaTime);
+        //transform.Rotate(direcion*90);
         
     }
 
@@ -164,13 +202,16 @@ public class HumanControl : MonoBehaviour
         }
     }
 
-    public void SetMove(Vector3 aimPoint)      //设置移动目的地
+    public void SetMove(Vector3 aimPoint,int newMapIndex)      //设置移动目的地
     {
         if(humanState!=state.Move)
         {
             humanState = state.Move;
         }
-        aimPosition = aimPoint;
+
+
+        mapIndex = newMapIndex;
+        
     }
 
     public void SetPursue()              //设置追击目标
@@ -202,5 +243,40 @@ public class HumanControl : MonoBehaviour
             currentEnemy.GetComponent<HumanControl>().GetHurt(attack);
         }
 
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (mapIndex != -1)
+        {
+            Vector3 pos = transform.position;
+            if (pos.x >= 0)
+            {
+                pos.x=(int)((int)(pos.x + 1) % 2 + pos.x);
+            }
+            else
+            {
+                pos.x = (int)((int)(pos.x - 1) % 2 + pos.x);
+            }
+
+            if (pos.z >= 0)
+            {
+                pos.z = (int)((int)(pos.z + 1) % 2 + pos.z);
+            }
+            else
+            {
+                pos.z = (int)((int)(pos.z - 1) % 2 + pos.z);
+            }
+
+            pos.y = -1;
+
+            if (other.gameObject.layer == 10)
+            {
+                if(pos == other.transform.position)
+                {
+                    dir = other.GetComponent<GridScript>().maps[mapIndex].direction;
+                }
+            }
+        }
     }
 }

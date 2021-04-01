@@ -245,34 +245,33 @@ public class HumanControl : MonoBehaviour
 
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other)          //碰撞
     {
-        if (mapIndex != -1)
+        if (mapIndex != -1)             //获取地图导航信息
         {
-            Vector3 pos = transform.position;
-            if (pos.x >= 0)
+            if (other.gameObject.layer == 10)           
             {
-                pos.x=(int)((int)(pos.x + 1) % 2 + pos.x);
-            }
-            else
-            {
-                pos.x = (int)((int)(pos.x - 1) % 2 + pos.x);
-            }
+                Vector3 pos = transform.position;
+                if (pos.x >= 0)
+                {
+                    pos.x = (int)((int)(pos.x + 1) % 2 + pos.x);
+                }
+                else
+                {
+                    pos.x = (int)((int)(pos.x - 1) % 2 + pos.x);
+                }
 
-            if (pos.z >= 0)
-            {
-                pos.z = (int)((int)(pos.z + 1) % 2 + pos.z);
-            }
-            else
-            {
-                pos.z = (int)((int)(pos.z - 1) % 2 + pos.z);
-            }
+                if (pos.z >= 0)
+                {
+                    pos.z = (int)((int)(pos.z + 1) % 2 + pos.z);
+                }
+                else
+                {
+                    pos.z = (int)((int)(pos.z - 1) % 2 + pos.z);
+                }
 
-            pos.y = -1;
-
-            if (other.gameObject.layer == 10)
-            {
-                if(pos == other.transform.position)
+                pos.y = -1;
+                if (pos == other.transform.position)
                 {
                     dir = other.GetComponent<GridScript>().maps[mapIndex].direction;
                 }

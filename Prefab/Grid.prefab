@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5186707095376758066}
   - component: {fileID: 5186707095376758065}
   m_Layer: 10
-  m_Name: Grids
+  m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,3 +61,5 @@ MonoBehaviour:
   grids: []
   move: 
   gridsControl: {fileID: 0}
+  hinderNum: 1
+  DirObj: {fileID: 1483336605119516579, guid: 2d7a2fcfc89c51843b473fc50a03a571, type: 3}

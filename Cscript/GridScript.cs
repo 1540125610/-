@@ -11,8 +11,11 @@ public class GridScript : MonoBehaviour
 
     public int hinderNum =1;            //阻碍系数
 
-    //地图数据
-    public struct mapGrid
+    public GameObject DirObj;           //用于显示方向的物体
+    private GameObject MyDirObj;
+
+ //地图数据
+ public struct mapGrid
     {
         public int direction;                  //方向
         public int allHinderNum;               //总阻碍系数
@@ -31,7 +34,11 @@ public class GridScript : MonoBehaviour
         GetOtherGrid();
 
         maps = new mapGrid[1000];       //预留1k个地图
-}
+
+
+        MyDirObj = GameObject.Instantiate(DirObj,transform.position+ DirObj.transform.position, DirObj.transform.rotation);     //在上方创建用于显示方向的物体
+        MyDirObj.transform.parent = transform;
+    }
 
     // Update is called once per frame
     void Update()
@@ -145,40 +152,22 @@ public class GridScript : MonoBehaviour
         maps[index].direction = 5;          //该方格，位置不动
         maps[index].allHinderNum = 0;       //该方格的总系数为0
 
-        NextMap(5, maps[index].allHinderNum, index);
+        NextMap(0, maps[index].allHinderNum, index);
     }
 
 
     //传递给下一个网格
     public void NextMap(int dir,int nowHinderNum,int mapNum)
     {
-
-        nowHinderNum += hinderNum;                              //更新总系数
-        if(maps[mapNum].allHinderNum == 0)
-        {
-
-        }
-        else if (nowHinderNum > maps[mapNum].allHinderNum)           //当本身总系数低于传递的数组，保留原系数
-        {
-            return;
-        }
-
-
-        //确定为最低路线时，更新信息
-        maps[mapNum].allHinderNum = nowHinderNum;
-        maps[mapNum].direction = 10 - dir;
         
-
-        for (int i=1; i < 10; i++)
-        {
-            if(i == dir || i == 5)      //为自身或者来源方向时，跳过
-            {
-                continue;
-            }
-            if (move[i])            //可以移动的方向
-            {
-                grids[i].NextMap(i, maps[mapNum].allHinderNum, mapNum);
-            }
-        }
     }
+
+    //显示地图方向(多少层)
+    public void showMove(int index) 
+    {
+        int i = maps[index].direction;
+        MyDirObj.GetComponent<TextMesh>().text = i.ToString();
+    }
+
+    
 }

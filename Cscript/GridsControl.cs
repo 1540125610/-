@@ -41,7 +41,7 @@ public class GridsControl : MonoBehaviour
 
 
         //实验用
-        gridScripts = new GridScript[100];     //2500个格子
+        gridScripts = new GridScript[100];     //100个格子
 
         int x, y;                               //x：行，y列 左下为原点
         for (int i = 0; i < 100; i++)
@@ -127,6 +127,12 @@ public class GridsControl : MonoBehaviour
                 foreach(GameObject a in chosenObj)
                 {
                     a.GetComponent<HumanControl>().SetMove(aimPoint, i);
+                }
+
+                //debug
+                foreach (GridScript gridScript in gridScripts)
+                {
+                    gridScript.showMove(i);
                 }
 
                 return;

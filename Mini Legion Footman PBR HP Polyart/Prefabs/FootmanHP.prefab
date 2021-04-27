@@ -827,7 +827,6 @@ GameObject:
   - component: {fileID: 400048}
   - component: {fileID: 9500000}
   - component: {fileID: 90355415028295287}
-  - component: {fileID: 2400207303298712728}
   - component: {fileID: 3424012122524887029}
   m_Layer: 8
   m_Name: FootmanHP
@@ -890,28 +889,10 @@ MonoBehaviour:
   isAttack: 0
   attack: 20
   maxHp: 100
---- !u!195 &2400207303298712728
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100048}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  moveSpeed: 0
+  turningSpeed: 0
+  mapIndex: -1
+  dir: 0
 --- !u!136 &3424012122524887029
 CapsuleCollider:
   m_ObjectHideFlags: 0

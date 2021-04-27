@@ -6,13 +6,10 @@ public class GridScript : MonoBehaviour
 {
     public bool isAppropriat;           //是否被占用
     public GridScript[] grids;          //周围脚本
-    public bool[] move;                 //是否可以向周围移动(下标表示上方的周围脚本)
+    public List<int> canMove;                 //可以移动的方向
     public GridsControl gridsControl;               //格子汇总信息
 
     public int hinderNum =1;            //阻碍系数
-
-    public GameObject DirObj;           //用于显示方向的物体
-    private GameObject MyDirObj;
 
  //地图数据
  public struct mapGrid
@@ -28,25 +25,20 @@ public class GridScript : MonoBehaviour
         isAppropriat = false;           //初始未被占用
 
         grids = new GridScript[10];     //周围脚本(0不使用，1为左下，9为右上)
-        move = new bool[10];
 
         gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();
         GetOtherGrid();
 
         maps = new mapGrid[1000];       //预留1k个地图
-
-
-        MyDirObj = GameObject.Instantiate(DirObj,transform.position+ DirObj.transform.position, DirObj.transform.rotation);     //在上方创建用于显示方向的物体
-        MyDirObj.transform.parent = transform;
     }
 
     // Update is called once per frame
     void Update()
     {
-
         
     }
 
+    //获取周围的方格 （可以优化为按照名字进行获取）
     private void GetOtherGrid()
     {
         float posX = transform.position.x;
@@ -56,71 +48,71 @@ public class GridScript : MonoBehaviour
         {
             Vector3 aPos = a.transform.position;
 
-            if(Mathf.Abs(aPos.x-posX)>2 || Mathf.Abs(aPos.z - posZ) > 2)    //不是周围的直接跳过
+            if(Mathf.Abs(aPos.x-posX)>5 || Mathf.Abs(aPos.z - posZ) > 5)    //不是周围的直接跳过
             {
                 continue;
             }
 
 
             //左下 1
-            if(aPos.x == posX-1*2 && aPos.y == posY && aPos.z ==posZ-1*2)
+            if(aPos.x == posX-1*5 && aPos.y == posY && aPos.z ==posZ-1*5)
             {
                 grids[1] = a;
-                move[1] = true;
+                canMove.Add(1);
             }
             //下  2
-            else if (aPos.x == posX && aPos.y == posY && aPos.z == posZ - 1*2)
+            else if (aPos.x == posX && aPos.y == posY && aPos.z == posZ - 1*5)
             {
                 grids[2] = a;
-                move[2] = true;
+                canMove.Add(2);
             }
             //右下 3
-            else if (aPos.x == posX + 1*2 && aPos.y == posY && aPos.z == posZ - 1*2)
+            else if (aPos.x == posX + 1*5 && aPos.y == posY && aPos.z == posZ - 1*5)
             {
                 grids[3] = a;
-                move[3] = true;
+                canMove.Add(3);
             }
             //左  4
-            else if (aPos.x == posX - 1*2 && aPos.y == posY && aPos.z == posZ)
+            else if (aPos.x == posX - 1*5 && aPos.y == posY && aPos.z == posZ)
             {
                 grids[4] = a;
-                move[4] = true;
+                canMove.Add(4);
             }
             //自己 5
             else if (aPos.x == posX && aPos.y == posY && aPos.z == posZ)
             {
                 grids[5] = a;
-                move[5] = true;
+                canMove.Add(5);
             }
             //右  6
-            else if (aPos.x == posX + 1*2 && aPos.y == posY && aPos.z == posZ)
+            else if (aPos.x == posX + 1*5 && aPos.y == posY && aPos.z == posZ)
             {
                 grids[6] = a;
-                move[6] = true;
+                canMove.Add(6);
             }
             //左上 7
-            else if (aPos.x == posX - 1*2 && aPos.y == posY && aPos.z == posZ + 1*2)
+            else if (aPos.x == posX - 1*5 && aPos.y == posY && aPos.z == posZ + 1*5)
             {
                 grids[7] = a;
-                move[7] = true;
+                canMove.Add(7);
             }
             //上 8
-            else if (aPos.x == posX && aPos.y == posY && aPos.z == posZ + 1*2)
+            else if (aPos.x == posX && aPos.y == posY && aPos.z == posZ + 1*5)
             {
                 grids[8] = a;
-                move[8] = true;
+                canMove.Add(8);
             }
             //右上 9
-            else if (aPos.x == posX + 1*2 && aPos.y == posY && aPos.z == posZ + 1*2)
+            else if (aPos.x == posX + 1*5 && aPos.y == posY && aPos.z == posZ + 1*5)
             {
                 grids[9] = a;
-                move[9] = true;
+                canMove.Add(9);
             }
 
         }
     }
 
-    //被占用
+    //被占用(关闭周围可通行)
     public void OnAppropriat()
     {
         isAppropriat = true;
@@ -128,20 +120,20 @@ public class GridScript : MonoBehaviour
         {
             if(grids[a] != null)
             {
-                move[a] = false;
+                canMove.Remove(a);
             }
         }
     }
 
-    //未被占用
-    public void OffOnAppropriat()
+    //未被占用(开启周围通行)
+    public void OffAppropriat()
     {
         isAppropriat = false;
         for (int a = 0; a < 10; a++)
         {
             if (grids[a] != null)
             {
-                move[a] = true;
+                canMove.Add(a);
             }
         }
     }
@@ -156,18 +148,57 @@ public class GridScript : MonoBehaviour
     }
 
 
-    //传递给下一个网格
-    public void NextMap(int dir,int nowHinderNum,int mapNum)
+    //接受上一个网格的传递
+    public void GetMap(int dir,int nowHinderNum,int mapNum)
     {
-        
-    }
+        if (maps[mapNum].direction == 5)     //如果本地方向为5时，意味着为终点，不接受任何传递
+        {
+            return;
+        }
 
-    //显示地图方向(多少层)
-    public void showMove(int index) 
+        if(nowHinderNum < maps[mapNum].allHinderNum || maps[mapNum].allHinderNum==0)    //传递过来的值小于当前值 或者当前值为0
+        {
+            maps[mapNum].allHinderNum = nowHinderNum;
+            maps[mapNum].direction = 10-dir;
+
+            NextMap(maps[mapNum].direction, maps[mapNum].allHinderNum, mapNum);            //继续向外传递
+
+        }
+        else if(nowHinderNum == maps[mapNum].allHinderNum)              //当传递过来的值相等时
+        {
+            if (dir % 2 == 1)                                       //优先斜向移动
+            {
+                maps[mapNum].allHinderNum = nowHinderNum;
+                maps[mapNum].direction = 10-dir;
+
+                NextMap(maps[mapNum].direction, maps[mapNum].allHinderNum, mapNum);    //继续向外传递
+            }
+            else
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+    //向下一个网格传递值
+    private void NextMap(int dir, int nowHinderNum, int mapNum)
     {
-        int i = maps[index].direction;
-        MyDirObj.GetComponent<TextMesh>().text = i.ToString();
+        foreach(int i in canMove)         //遍历所有通行方向
+        {
+            if (i !=5 && i!=dir )            //当方向不为本身且不为接收方向
+            {
+                if (i % 2 == 1)             //传递方向为斜向时
+                {
+                    grids[i].GetMap(i, maps[mapNum].allHinderNum + 1 +grids[i].hinderNum, mapNum);          //斜向+1
+                }
+                else                        //传递方向不为斜向时
+                {
+                    grids[i].GetMap(i, maps[mapNum].allHinderNum + grids[i].hinderNum, mapNum);
+                }
+            }
+        }
     }
-
-    
 }

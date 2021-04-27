@@ -15,40 +15,19 @@ public class GridsControl : MonoBehaviour
         public List<GameObject> Objects;        //应该移动的物体
         public GridScript aimGrid;              //目标网格
     }
-    objGo[] objsGo = new objGo[1000];           //默认1k个地图
+    objGo[] objsGo = new objGo[100];           //默认100个导航地图
 
     private void Awake()
     {
 
-        //gridScripts = new GridScript[2500];     //2500个格子
-
-        //int x, y;                               //x：行，y列 左下为原点
-        //for (int i = 0; i < 2500; i++)
-        //{
-        //    x = i % 50;
-        //    y = i / 50;
-        //    Vector3 pos = new Vector3(-49 + x * 2, -1, -49 + y * 2);  //从左下开始创建 格子大小为2*2
-
-        //    GameObject newGrid = GameObject.Instantiate(grid, pos, Quaternion.identity);
-
-        //    newGrid.name = "Grid" + y + "-" + x;      //名字
-        //    newGrid.transform.parent = Grids.transform;     //移动到总网格下
-
-        //    gridScripts[i] = newGrid.GetComponent<GridScript>();        //将其脚本列入脚本汇总
-        //}
-
-
-
-
-        //实验用
-        gridScripts = new GridScript[100];     //100个格子
+        gridScripts = new GridScript[400];     //2500个格子
 
         int x, y;                               //x：行，y列 左下为原点
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 400; i++)
         {
-            x = i % 10;
-            y = i / 10;
-            Vector3 pos = new Vector3(-9 + x * 2, -1, -9 + y * 2);  //从左下开始创建 格子大小为2*2
+            x = i % 20;
+            y = i / 20;
+            Vector3 pos = new Vector3(-47.5f + x * 5, -1, -47.5f + y * 5);  //从左下开始创建 格子大小为5*5
 
             GameObject newGrid = GameObject.Instantiate(grid, pos, Quaternion.identity);
 
@@ -87,7 +66,7 @@ public class GridsControl : MonoBehaviour
         //先查找是否为存在同一地图
         foreach(objGo a in objsGo)
         {
-            if(a.aimGrid == newAimGrid)        //为同一张地图时
+            if(a.aimGrid == newAimGrid)        //存在以该点为终点的导航地图时
             {
                 int index = Array.IndexOf(objsGo, a);           //获得当前位置下标
 
@@ -104,13 +83,11 @@ public class GridsControl : MonoBehaviour
                                                    //告知单位进行移动
                     }
                 }
-
-
                 return;                     //退出函数
             }
         }
 
-        for(int i=0;i<objsGo.Length;i++ )                          //非同一张图
+        for(int i=0;i<objsGo.Length;i++ )                        //非同一张图
         {
             if (!objsGo[i].used)                                 //未被使用的位置
             {
@@ -128,15 +105,25 @@ public class GridsControl : MonoBehaviour
                 {
                     a.GetComponent<HumanControl>().SetMove(aimPoint, i);
                 }
-
-                //debug
-                foreach (GridScript gridScript in gridScripts)
-                {
-                    gridScript.showMove(i);
-                }
-
                 return;
             }
+        }
+    }
+
+    //将莫一个单位从地图导航中剔除
+    public void DeleteObj(GameObject obj,int index)
+    {
+        if (index == -1)   //当非导航时，退出
+        {
+            return;
+        }
+
+        objsGo[index].Objects.Remove(obj);   //将该单位剔除
+
+        if (objsGo[index].Objects.Count == 0)       //当该地图没有物体在使用时，清空该地图
+        {
+            objsGo[index].used = false;
+            objsGo[index].aimGrid = null;
         }
     }
 }

@@ -8,15 +8,19 @@ public class HumanControl : MonoBehaviour
 {
     private Camera mainCamara;
     private Canvas canvas;
-    private Vector3 aimPosition;
-    private NavMeshAgent agent;     //设置导航代理
+    private Vector3 aimPosition;            //目标地点
+    private GridsControl gridsControl;      //导航脚本
+
     public GameObject currentEnemy;  //当前攻击目标
     public string playerName;  //所属玩家名称
     public bool isAttack=false;
 
     public int attack;      //攻击力
     public int maxHp;      //最大生命值
-    private int currentHp;  //当前生命值
+    public int moveSpeed;       //移动速度
+    public int turningSpeed;    //转身速度
+    private int currentHp;      //当前生命值
+
 
     public int mapIndex=-1;
     public int dir = 0;
@@ -32,17 +36,21 @@ public class HumanControl : MonoBehaviour
         Die,      //阵亡
     }
     state humanState;
+
     void Start()
     {
+        gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();
+
         ani = GetComponent<Animator>();
-        agent = GetComponent<NavMeshAgent>();
         mainCamara = Camera.main;
         //拿到是否被选中的圈，并关闭它
         canvas = GetComponentInChildren<Canvas>();
         canvas.gameObject.SetActive(false);
 
         humanState = state.Stand;    //初始状态为待机
-        currentHp = maxHp;
+        currentHp = maxHp;          //默认初始生命值最大
+        moveSpeed = 1;                  //移动速度默认为1
+        turningSpeed = 1; ;             //转身速度默认为1
     }
 
     
@@ -70,7 +78,6 @@ public class HumanControl : MonoBehaviour
         {
             StopCoroutine("OnAttack");
             isAttack=false;
-            agent.SetDestination(transform.position);
             humanState = state.Stand;
         }
 
@@ -118,41 +125,23 @@ public class HumanControl : MonoBehaviour
             ani.SetBool("isAttack", false);
         }
         isAttack = false;
-
-        int x=0, z=0;
-        switch (dir)
+        Vector3 direcion = new Vector3((dir-1)%3-1, 0,(dir-1)/3-1);           //方向转化以5为中心的坐标系(例如 1 转化为-1，-1)
+        if(direcion == Vector3.zero)            //方向为5时
         {
-            case 1:
-                x = -1; z = -1;
-                break;
-            case 2:
-                x = 0; z = -1; 
-                break;
-            case 3:
-                x = 1; z = -1;
-                break;
-            case 4:
-                x = -1; z = 0;
-                break;
-            case 5:
-                x = 0; z = 0;
-                break;
-            case 6:
-                x = 1; z = 0;
-                break;
-            case 7:
-                x = -1; z = 1;
-                break;
-            case 8:
-                x = 0; z = 1;
-                break;
-            case 9:
-                x = 1; z = 1;
-                break;
+            direcion = aimPosition - transform.position;
         }
-        Vector3 direcion = new Vector3(x, 0, z);
-        transform.Translate(direcion.normalized *Time.deltaTime);
-        //transform.Rotate(direcion*90);
+        transform.Translate(direcion.normalized * moveSpeed *Time.deltaTime,Space.World);       //移动
+        transform.rotation = Quaternion.LookRotation(direcion.normalized);          //转向
+
+
+        if (Vector3.Distance(aimPosition, transform.position) < 0.1)            //到达终点
+        {
+            gridsControl.DeleteObj(gameObject, mapIndex);       //通知导航系统，清除自己
+
+            humanState = state.Stand;               //切换到站立状态
+            mapIndex = -1;                          //清零导航
+        }
+
         
     }
 
@@ -167,7 +156,7 @@ public class HumanControl : MonoBehaviour
         }
         if (currentEnemy != null)
         {
-            agent.SetDestination(currentEnemy.transform.position);
+
         }
     }
 
@@ -204,14 +193,22 @@ public class HumanControl : MonoBehaviour
 
     public void SetMove(Vector3 aimPoint,int newMapIndex)      //设置移动目的地
     {
-        if(humanState!=state.Move)
+        if (humanState!=state.Move)          //切换到移动状态
         {
             humanState = state.Move;
         }
 
+        if(mapIndex == newMapIndex)         //是否使用同一张地图
+        {
+            aimPosition = aimPoint;             //更新最终地点
+        }
+        else
+        {
+            gridsControl.DeleteObj(gameObject, mapIndex);       //通知导航系统，清除自己
 
-        mapIndex = newMapIndex;
-        
+            aimPosition = aimPoint;             //获取最终地点
+            mapIndex = newMapIndex;             //获取地图信息
+        }
     }
 
     public void SetPursue()              //设置追击目标
@@ -247,30 +244,16 @@ public class HumanControl : MonoBehaviour
 
     private void OnTriggerStay(Collider other)          //碰撞
     {
-        if (mapIndex != -1)             //获取地图导航信息
+        if (mapIndex != -1)             //运动时
         {
-            if (other.gameObject.layer == 10)           
+            if (other.gameObject.layer == 10)           //当其为导航基点时
             {
                 Vector3 pos = transform.position;
-                if (pos.x >= 0)
-                {
-                    pos.x = (int)((int)(pos.x + 1) % 2 + pos.x);
-                }
-                else
-                {
-                    pos.x = (int)((int)(pos.x - 1) % 2 + pos.x);
-                }
 
-                if (pos.z >= 0)
-                {
-                    pos.z = (int)((int)(pos.z + 1) % 2 + pos.z);
-                }
-                else
-                {
-                    pos.z = (int)((int)(pos.z - 1) % 2 + pos.z);
-                }
-
+                pos.x = (((int)pos.x + 5) / 5) * 5 - 2.5f;
                 pos.y = -1;
+                pos.z = (((int)pos.z + 5) / 5) * 5 - 2.5f;
+
                 if (pos == other.transform.position)
                 {
                     dir = other.GetComponent<GridScript>().maps[mapIndex].direction;

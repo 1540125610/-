@@ -31,8 +31,8 @@ public class PlayerControl : MonoBehaviour
 
     List<GameObject> chosenObj = new List<GameObject>();            //当前选中的单位队列
     GameObject chosenOtherPlayerObj = null;                         //选到了其他玩家的单位
-    
 
+    public bool onBuilding = false;      //是否正在建造建筑
     void Start()
     {
         
@@ -91,7 +91,7 @@ public class PlayerControl : MonoBehaviour
 
 
 
-        if (Input.GetMouseButton(0))            //长按左键框选
+        if (Input.GetMouseButton(0) && !onBuilding)            //长按左键框选
         {
             
             //框选
@@ -103,7 +103,7 @@ public class PlayerControl : MonoBehaviour
             
             selectBox.transform.localScale = new Vector3(x, y, 1);                                        //框的大小
         }
-        if (Input.GetMouseButtonUp(0))          //抬起左键
+        if (Input.GetMouseButtonUp(0) && !onBuilding)          //抬起左键
         {
 
             //框选

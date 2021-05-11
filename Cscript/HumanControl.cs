@@ -131,6 +131,8 @@ public class HumanControl : MonoBehaviour
             direcion = aimPosition - transform.position;
         }
         transform.Translate(direcion.normalized * moveSpeed *Time.deltaTime,Space.World);       //移动
+
+        
         transform.rotation = Quaternion.LookRotation(direcion.normalized);          //转向
 
 

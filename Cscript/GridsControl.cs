@@ -64,7 +64,7 @@ public class GridsControl : MonoBehaviour
     private void GridAI(GridScript newAimGrid, List<GameObject> chosenObj,Vector3 aimPoint)            //（网格，单位，目的点）
     {
         //先查找是否为存在同一地图
-        foreach(objGo a in objsGo)
+        foreach (objGo a in objsGo)
         {
             if(a.aimGrid == newAimGrid)        //存在以该点为终点的导航地图时
             {
@@ -86,8 +86,7 @@ public class GridsControl : MonoBehaviour
                 return;                     //退出函数
             }
         }
-
-        for(int i=0;i<objsGo.Length;i++ )                        //非同一张图
+        for (int i=0;i<objsGo.Length;i++ )                        //非同一张图
         {
             if (!objsGo[i].used)                                 //未被使用的位置
             {
@@ -99,12 +98,16 @@ public class GridsControl : MonoBehaviour
                 //将路传递给目标方格
                 objsGo[i].aimGrid.MapStart(i);
 
+                
 
                 //让每个单位开始移动
-                foreach(GameObject a in chosenObj)
+                for(int j = chosenObj.Count -1;j>=0;j--)
                 {
-                    a.GetComponent<HumanControl>().SetMove(aimPoint, i);
+                    int mapindex = chosenObj[j].GetComponent<HumanControl>().SetMove(aimPoint, i);     //获取原地址且改变单位地址
+                    DeleteObj(chosenObj[j], mapindex);
                 }
+
+                Debug.Log(objsGo[i].Objects1)
                 return;
             }
         }
@@ -118,9 +121,11 @@ public class GridsControl : MonoBehaviour
             return;
         }
 
-        objsGo[index].Objects.Remove(obj);   //将该单位剔除
+        int i = objsGo[index].Objects.IndexOf(obj);
+        objsGo[index].Objects.RemoveAt(i);          
 
-        if (objsGo[index].Objects.Count == 0)       //当该地图没有物体在使用时，清空该地图
+
+        if (objsGo[index].Objects.Count == 0)       //当该地图没有物体在原地址使用时，清空该地图
         {
             objsGo[index].used = false;
             objsGo[index].aimGrid = null;

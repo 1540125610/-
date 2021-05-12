@@ -193,7 +193,7 @@ public class HumanControl : MonoBehaviour
         }
     }
 
-    public void SetMove(Vector3 aimPoint,int newMapIndex)      //设置移动目的地
+    public int SetMove(Vector3 aimPoint,int newMapIndex)      //设置移动目的地(返回原地址)
     {
         if (humanState!=state.Move)          //切换到移动状态
         {
@@ -204,13 +204,16 @@ public class HumanControl : MonoBehaviour
         {
             aimPosition = aimPoint;             //更新最终地点
         }
-        else
+        else                                //不使用同一张地图
         {
-            gridsControl.DeleteObj(gameObject, mapIndex);       //通知导航系统，清除自己
+            int i = mapIndex;                   //得到原地址
 
             aimPosition = aimPoint;             //获取最终地点
             mapIndex = newMapIndex;             //获取地图信息
+
+            return i;
         }
+        return 0;
     }
 
     public void SetPursue()              //设置追击目标

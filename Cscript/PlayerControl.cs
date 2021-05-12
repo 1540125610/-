@@ -29,7 +29,7 @@ public class PlayerControl : MonoBehaviour
 
     public GameObject selectBox;        //选框
 
-    List<GameObject> chosenObj = new List<GameObject>();            //当前选中的单位队列
+    public List<GameObject> chosenObj = new List<GameObject>();            //当前选中的单位队列
     GameObject chosenOtherPlayerObj = null;                         //选到了其他玩家的单位
 
     public bool onBuilding = false;      //是否正在建造建筑
@@ -62,7 +62,7 @@ public class PlayerControl : MonoBehaviour
         //鼠标右键发出移动命令
         if (Input.GetMouseButtonDown(1)&&chosenObj.Count!=0)   
         {
-            RayDetection();
+            RayDetection(9);            //检测第九层(地面)
             Vector3 aimPoint = hit.point;           //获得地面点
             gridsControl.ToAim(aimPoint, chosenObj);
             
@@ -72,9 +72,7 @@ public class PlayerControl : MonoBehaviour
         //鼠标左键操作
         if (Input.GetMouseButtonDown(0))        //按下左键
         {
-            RayDetection();
-            
-
+            RayDetection(-1);               //检测所有层级
 
             //框选(按下左键)
             startPosWorld = hit.point;    //记录左键按下时到场景的世界坐标
@@ -130,6 +128,7 @@ public class PlayerControl : MonoBehaviour
                         }
                         else if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))  // 按下ctrl(剔除单位)
                         {
+                            
                             if (chosenObj.Contains(hit.collider.gameObject))          //是已选择的目标
                             {
                                 DeleteChosenObj(hit.collider.gameObject);
@@ -211,11 +210,18 @@ public class PlayerControl : MonoBehaviour
     }
 
     //射线检测
-    public void RayDetection()      
+    public void RayDetection(int i)     //i是检测范围，-1为所有，其余数为对应层级 
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);        //摄像机发出射线
-        
-        Physics.Raycast(ray, out hit,1000, 1<<9);                 //检测到地面
+
+        if (i == -1)
+        {
+            Physics.Raycast(ray, out hit, 1000);            //检测所有层级
+        }
+        else
+        {
+            Physics.Raycast(ray, out hit, 1000, 1 << i);                 //检测对应层级
+        }
     }
 
     //刷新玩家信息

@@ -107,7 +107,7 @@ public class GridsControl : MonoBehaviour
                     DeleteObj(chosenObj[j], mapindex);
                 }
 
-                Debug.Log(objsGo[i].Objects1)
+                
                 return;
             }
         }

@@ -69,5 +69,4 @@ public class GameInfo
     public bool IsAi;   //是不是AI控制
 
     public float Credits;  //积分
-
 }

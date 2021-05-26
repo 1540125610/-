@@ -265,5 +265,18 @@ public class PlayerControl : MonoBehaviour
         chosenObj.Remove(addObj);
     }
 
+    //obj传来死亡或逃逸消息时(offSelected 为是否关闭选择框)
+    public void ObjDie(GameObject obj,bool offSelected)
+    {
+        if (chosenObj.Contains(obj))
+        {
+            if (offSelected)        //是否关闭选择框
+            {
+                obj.GetComponent<HumanControl>().OffSelected();       //关闭选择框
+            }
+
+            chosenObj.Remove(obj);      //从选择列表中剔除该单位
+        }
+    } 
     
 }

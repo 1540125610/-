@@ -10,6 +10,7 @@ public class HumanControl : MonoBehaviour
     private Canvas canvas;
     private Vector3 aimPosition;            //目标地点
     private GridsControl gridsControl;      //导航脚本
+    private PlayerControl playerControl;    //玩家控制脚本
 
     public GameObject currentEnemy;  //当前攻击目标
     public string playerName;  //所属玩家名称
@@ -40,6 +41,7 @@ public class HumanControl : MonoBehaviour
     void Start()
     {
         gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();
+        playerControl = GameObject.Find("Player Control").GetComponent<PlayerControl>();
 
         ani = GetComponent<Animator>();
         mainCamara = Camera.main;
@@ -49,7 +51,7 @@ public class HumanControl : MonoBehaviour
 
         humanState = state.Stand;    //初始状态为待机
         currentHp = maxHp;          //默认初始生命值最大
-        moveSpeed = 1;                  //移动速度默认为1
+        moveSpeed = 2;                  //移动速度默认为2
         turningSpeed = 1; ;             //转身速度默认为1
     }
 
@@ -230,7 +232,9 @@ public class HumanControl : MonoBehaviour
     }
     public void Died()
     {
-        Destroy(gameObject);
+        gridsControl.DeleteObj(gameObject, mapIndex);      //通知导航系统，清除自己
+        playerControl.ObjDie(gameObject,false);            //通知玩家控制系统，清除自己
+        Destroy(gameObject);                               //销毁自身
     }
 
     public void GetHurt(int damage)     //受到攻击

@@ -830,7 +830,7 @@ GameObject:
   - component: {fileID: 8885053845221672544}
   - component: {fileID: 3030642653136086789}
   - component: {fileID: 5643629777522897095}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: GruntHP
   m_TagString: Military Units
   m_Icon: {fileID: 0}
@@ -1109,7 +1109,7 @@ GameObject:
   - component: {fileID: 3529269265734734565}
   - component: {fileID: 4871011002610905243}
   - component: {fileID: 1756583857969520613}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: AttackArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}

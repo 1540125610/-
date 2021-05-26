@@ -25,7 +25,13 @@ public class Building : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             Physics.Raycast(ray, out hit);
-            currentPosition = new Vector3(hit.point.x, -1, hit.point.z);
+
+            //建组必在4个网格中间
+            float posX = (((int)hit.point.x) / 5) * 5 ;
+            float posY = -1;
+            float posZ = (((int)hit.point.z) / 5) * 5 ;
+            
+            currentPosition = new Vector3(posX, posY, posZ);
             transform.position = currentPosition;
         }
         if (Input.GetMouseButtonDown(0) && buildingJudge.canBuild && !isBuilt)

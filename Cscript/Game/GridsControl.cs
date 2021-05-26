@@ -55,7 +55,6 @@ public class GridsControl : MonoBehaviour
     private GridScript PosToGrid(Vector3 pos)
     {
         Collider[] collidedObj = Physics.OverlapSphere(pos, 0.01f, 1 << 10);      //创建球型碰撞(位置，大小，层数)
-        Debug.Log(collidedObj.Length); 
 
         GridScript aim = collidedObj[0].GetComponent<GridScript>();             //获得网格上的脚本
         return aim;                                                             //返回脚本
@@ -123,8 +122,7 @@ public class GridsControl : MonoBehaviour
             return;
         }
 
-        int i = objsGo[index].Objects.IndexOf(obj);
-        objsGo[index].Objects.RemoveAt(i);          
+        objsGo[index].Objects.Remove(obj);
 
 
         if (objsGo[index].Objects.Count == 0)       //当该地图没有物体在原地址使用时，清空该地图

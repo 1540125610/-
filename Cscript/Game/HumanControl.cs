@@ -18,7 +18,7 @@ public class HumanControl : MonoBehaviour
 
     public int attack;      //攻击力
     public int maxHp;      //最大生命值
-    public int moveSpeed;       //移动速度
+    public float moveSpeed;       //移动速度
     public int turningSpeed;    //转身速度
     private int currentHp;      //当前生命值
 
@@ -51,7 +51,7 @@ public class HumanControl : MonoBehaviour
 
         humanState = state.Stand;    //初始状态为待机
         currentHp = maxHp;          //默认初始生命值最大
-        moveSpeed = 2;                  //移动速度默认为2
+        moveSpeed = 1.5f;               //移动速度默认为1.5
         turningSpeed = 1; ;             //转身速度默认为1
     }
 

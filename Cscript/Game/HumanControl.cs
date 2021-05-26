@@ -90,7 +90,6 @@ public class HumanControl : MonoBehaviour
         {
             StopCoroutine("OnAttack");
         }
-        
     }
 
 
@@ -115,6 +114,7 @@ public class HumanControl : MonoBehaviour
             ani.SetBool("isAttack", false);
             ani.SetBool("isWalk", false);
         }
+        mapIndex = -1;
     }
 
     void Move()             //移动
@@ -242,7 +242,7 @@ public class HumanControl : MonoBehaviour
         while(true)
         {
             yield return new WaitForSeconds(1f);
-            currentEnemy.GetComponent<HumanControl>().GetHurt(attack);
+            currentEnemy.GetComponentInParent <HumanControl>().GetHurt(attack);
         }
 
     }

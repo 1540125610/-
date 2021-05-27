@@ -26,6 +26,7 @@ public class HumanControl : MonoBehaviour
     public int mapIndex=-1;
     public int dir = 0;
 
+    List<GridScript> grids;       //当前碰撞到的网格
 
     private Animator ani;
      enum state
@@ -42,6 +43,8 @@ public class HumanControl : MonoBehaviour
     {
         gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();
         playerControl = GameObject.Find("Player Control").GetComponent<PlayerControl>();
+
+        grids = new List<GridScript>();
 
         ani = GetComponent<Animator>();
         mainCamara = Camera.main;
@@ -127,6 +130,9 @@ public class HumanControl : MonoBehaviour
             ani.SetBool("isAttack", false);
         }
         isAttack = false;
+
+        FindDir();
+
         Vector3 direcion = new Vector3((dir-1)%3-1, 0,(dir-1)/3-1);           //方向转化以5为中心的坐标系(例如 1 转化为-1，-1)
         if(direcion == Vector3.zero)            //方向为5时
         {
@@ -251,23 +257,56 @@ public class HumanControl : MonoBehaviour
 
     }
 
+    //在碰撞中
     private void OnTriggerStay(Collider other)          //碰撞
     {
         if (mapIndex != -1)             //运动时
         {
             if (other.gameObject.layer == 10)           //当其为导航基点时
             {
-                Vector3 pos = transform.position;
-
-                pos.x = (((int)pos.x + 5) / 5) * 5 - 2.5f;
-                pos.y = -1;
-                pos.z = (((int)pos.z + 5) / 5) * 5 - 2.5f;
-
-                if (pos == other.transform.position)
+                GridScript a = other.GetComponent<GridScript>();
+                if (a.isAppropriat  == false)       //未被占用时
                 {
-                    dir = other.GetComponent<GridScript>().maps[mapIndex].direction;
+                    grids.Add(a);
                 }
             }
         }
+    }
+
+    //离开碰撞
+    private void OnTriggerExit(Collider other)
+    {
+        if (mapIndex != -1)             //运动时
+        {
+            if (other.gameObject.layer == 10)           //当其为导航基点时
+            {
+                GridScript a = other.GetComponent<GridScript>();
+                if (a.isAppropriat == false)       //未被占用时
+                {
+                    grids.Remove(a);
+                }
+            }
+        }
+    }
+
+    //判断方向
+    private void FindDir()
+    {
+        GridScript minGrid = grids[0];
+
+        //遍历查找最近的网格
+        foreach(GridScript a in grids)
+        {
+            if(minGrid != a)        //不为第一个时
+            {
+                //当前网格离自身最近时，将最近网格替换为当前网格
+                 if(Vector3.Distance(a.transform.position,transform.position)<= Vector3.Distance(minGrid.transform.position, transform.position))
+                {
+                    minGrid = a;
+                }
+            }
+        }
+
+        dir = minGrid.maps[mapIndex].direction;
     }
 }

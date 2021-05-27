@@ -10,8 +10,13 @@ public class Building : MonoBehaviour
     private BuildingJudge buildingJudge;
     private ResourceSystem resourceManager;    //矿石数
     public int cost = 50;     //建造消耗矿石
+
+    List<GridScript> grids;                 //当前碰撞的网格
+
     void Start()
     {
+        grids = new List<GridScript>();
+
         isBuilt = false;
         buildingJudge = judgeArea.GetComponent<BuildingJudge>();
         resourceManager = GameObject.Find("ResourceManager").GetComponent<ResourceSystem>();
@@ -40,11 +45,34 @@ public class Building : MonoBehaviour
             buildingJudge.outBuilding();
             judgeArea.GetComponent<Renderer>().enabled = false;
             resourceManager.minerals -= cost;
+
+            GetGrids();     //获取被占据网格
+            TellToGrids();  //通知被占据网格关闭自身
+
         }
         if (Input.GetMouseButtonDown(1) && !isBuilt)
         {
             buildingJudge.outBuilding();
             Destroy(gameObject);
+        }
+    }
+
+    //获取占据网格
+    private void GetGrids()
+    {
+        foreach(Collider a in judgeArea.GetComponent<BuildingJudge>().gridsCollider)
+        {
+            GridScript b = a.GetComponent<GridScript>();
+            grids.Add(b);
+        }
+    }
+
+    //通知网格关闭自己
+    public void TellToGrids()
+    {
+        foreach(GridScript a in grids)
+        {
+            a.OnAppropriat();       //关闭该通道
         }
     }
 }

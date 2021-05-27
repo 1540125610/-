@@ -1,18 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridScript : MonoBehaviour
 {
     public bool isAppropriat;           //是否被占用
     public GridScript[] grids;          //周围脚本
     public List<int> canMove;                 //可以移动的方向
-    public GridsControl gridsControl;               //格子汇总信息
+    public GridsControl gridsControl;         //格子汇总信息
 
     public int hinderNum =1;            //阻碍系数
 
- //地图数据
- public struct mapGrid
+    public bool isSee = false;          //是否可见
+    public GameObject See;      //可见物体 
+
+    //地图数据
+    public struct mapGrid
     {
         public int direction;                  //方向
         public int allHinderNum;               //总阻碍系数
@@ -30,12 +34,22 @@ public class GridScript : MonoBehaviour
         GetOtherGrid();
 
         maps = new mapGrid[1000];       //预留1k个地图
+
+        See = transform.Find("See").gameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (isSee)
+        {
+            See.SetActive(true);
+            See.GetComponent<TextMesh>().text = maps[0].direction.ToString();
+        }
+        else
+        {
+            See.SetActive(false);
+        }
     }
 
     //获取周围的方格 （可以优化为按照名字进行获取）
@@ -112,31 +126,7 @@ public class GridScript : MonoBehaviour
         }
     }
 
-    //被占用(关闭周围可通行)
-    public void OnAppropriat()
-    {
-        isAppropriat = true;
-        for(int a = 0; a < 10; a++)
-        {
-            if(grids[a] != null)
-            {
-                canMove.Remove(a);
-            }
-        }
-    }
-
-    //未被占用(开启周围通行)
-    public void OffAppropriat()
-    {
-        isAppropriat = false;
-        for (int a = 0; a < 10; a++)
-        {
-            if (grids[a] != null)
-            {
-                canMove.Add(a);
-            }
-        }
-    }
+    
 
     //地图开始编写
     public void MapStart(int index)
@@ -197,6 +187,36 @@ public class GridScript : MonoBehaviour
                 else                        //传递方向不为斜向时
                 {
                     grids[i].GetMap(i, maps[mapNum].allHinderNum + grids[i].hinderNum, mapNum);
+                }
+            }
+        }
+    }
+
+    //被占用(关闭周围可通行)
+    public void OnAppropriat()
+    {
+        isAppropriat = true;
+        foreach (int a in canMove)
+        {
+            if(!grids[a].isAppropriat)      //该目标没有被占据
+            {
+                grids[a].canMove.Remove(10 - a);
+            }
+        }
+        canMove.Clear();      //清理可以移动列表
+    }
+
+    //未被占用(开启周围通行)
+    public void OffAppropriat()
+    {
+        isAppropriat = false;
+        for(int i = 1; i < 10; i++)
+        {
+            if(grids[i]!=null && i != 5)        //当周边网格存在且不为本身时
+            {
+                if(grids[i].isAppropriat == false)          //该网格未被占用
+                {
+                    canMove.Add(i);
                 }
             }
         }

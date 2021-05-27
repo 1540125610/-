@@ -11,7 +11,7 @@ public class GridsControl : MonoBehaviour
 
     public struct objGo 
     {
-        public bool used;               //该位置是否被使用
+        public bool used;                       //该位置是否被使用
         public List<GameObject> Objects;        //应该移动的物体
         public GridScript aimGrid;              //目标网格
     }
@@ -96,7 +96,7 @@ public class GridsControl : MonoBehaviour
                 objsGo[i].Objects = chosenObj;
                 objsGo[i].aimGrid = newAimGrid;
 
-                //将路传递给目标方格
+                //将开始寻路传递给目标方格
                 objsGo[i].aimGrid.MapStart(i);
 
                 
@@ -130,5 +130,26 @@ public class GridsControl : MonoBehaviour
             objsGo[index].used = false;
             objsGo[index].aimGrid = null;
         }
+    }
+
+    //开始刷新地图
+    public void StartRenovate()
+    {
+        StopCoroutine(Renovate());      //先关闭地图刷新协程
+        StartCoroutine(Renovate());     //开启新的协程
+    }
+
+
+    //刷新地图协程
+    IEnumerator Renovate()
+    {
+        for(int a=0;a<objsGo.Length;a++)
+        {
+            if (objsGo[a].used)         //当该地图被使用时
+            {
+                objsGo[a].aimGrid.MapStart(a); //将开始寻路传递给目标方格
+            }
+        }
+        yield break;
     }
 }

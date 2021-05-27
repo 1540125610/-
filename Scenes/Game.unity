@@ -460,6 +460,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GruntHP
       objectReference: {fileID: 0}
+    - target: {fileID: 100050, guid: aad05534a7ba0dd49b8c54ce188308ec, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 400050, guid: aad05534a7ba0dd49b8c54ce188308ec, type: 3}
       propertyPath: m_RootOrder
       value: 0

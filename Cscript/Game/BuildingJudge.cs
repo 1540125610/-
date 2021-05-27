@@ -13,8 +13,7 @@ public class BuildingJudge : MonoBehaviour
     private ResourceSystem resourceManager;    //矿石数
     private PlayerControl playerControl;
 
-    List<GridScript> grids;                 //当前碰撞的网格
-    List<Collider> gridsCollider;           //保存网格碰撞器
+    public List<Collider> gridsCollider;           //保存网格碰撞器
     void Start()
     {
         gridsCollider = new List<Collider>();
@@ -38,8 +37,6 @@ public class BuildingJudge : MonoBehaviour
         {
             rd.material = red;
         }
-
-        Debug.Log(gridsCollider.Count);
     }
     private void OnTriggerStay(Collider other)        //碰到障碍物不能建造
     {

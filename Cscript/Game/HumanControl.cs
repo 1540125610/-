@@ -146,7 +146,7 @@ public class HumanControl : MonoBehaviour
 
         if (Vector3.Distance(aimPosition, transform.position) < 0.1)            //到达终点
         {
-            gridsControl.DeleteObj(gameObject, mapIndex);       //通知导航系统，清除自己
+            gridsControl.DeleteObj(gameObject, mapIndex,null,false);       //通知导航系统，清除自己
 
             humanState = state.Stand;               //切换到站立状态
             mapIndex = -1;                          //清零导航
@@ -238,7 +238,7 @@ public class HumanControl : MonoBehaviour
     }
     public void Died()
     {
-        gridsControl.DeleteObj(gameObject, mapIndex);      //通知导航系统，清除自己
+        gridsControl.DeleteObj(gameObject, mapIndex,null,false);      //通知导航系统，清除自己
         playerControl.ObjDie(gameObject,false);            //通知玩家控制系统，清除自己
         Destroy(gameObject);                               //销毁自身
     }

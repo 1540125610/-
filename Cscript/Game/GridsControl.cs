@@ -105,7 +105,7 @@ public class GridsControl : MonoBehaviour
                 for(int j = chosenObj.Count -1;j>=0;j--)
                 {
                     int mapindex = chosenObj[j].GetComponent<HumanControl>().SetMove(aimPoint, i);     //获取原地址且改变单位地址
-                    DeleteObj(chosenObj[j], mapindex);
+                    DeleteObj(chosenObj[j], mapindex,chosenObj,true);
                 }
 
                 
@@ -115,7 +115,7 @@ public class GridsControl : MonoBehaviour
     }
 
     //将莫一个单位从地图导航中剔除
-    public void DeleteObj(GameObject obj,int index)
+    public void DeleteObj(GameObject obj,int index,List<GameObject> objs , bool x)
     {
         if (index == -1)   //当非导航时，退出
         {
@@ -123,6 +123,10 @@ public class GridsControl : MonoBehaviour
         }
 
         objsGo[index].Objects.Remove(obj);
+        if (x && !objs.Contains(obj))
+        {
+            objs.Add(obj);
+        }
 
 
         if (objsGo[index].Objects.Count == 0)       //当该地图没有物体在原地址使用时，清空该地图

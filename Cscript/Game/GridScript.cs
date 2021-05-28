@@ -201,6 +201,27 @@ public class GridScript : MonoBehaviour
             if(!grids[a].isAppropriat)      //该目标没有被占据
             {
                 grids[a].canMove.Remove(10 - a);
+
+                if(10-a == 2)
+                {
+                    grids[a].canMove.Remove(1);
+                    grids[a].canMove.Remove(2);
+                }
+                else if(10-a == 4)
+                {
+                    grids[a].canMove.Remove(1);
+                    grids[a].canMove.Remove(7);
+                }
+                else if(10-a == 6)
+                {
+                    grids[a].canMove.Remove(3);
+                    grids[a].canMove.Remove(9);
+                }
+                else if(10-a == 8)
+                {
+                    grids[a].canMove.Remove(7);
+                    grids[a].canMove.Remove(9);
+                }
             }
         }
         canMove.Clear();      //清理可以移动列表
@@ -217,6 +238,7 @@ public class GridScript : MonoBehaviour
                 if(grids[i].isAppropriat == false)          //该网格未被占用
                 {
                     canMove.Add(i);
+                    
                 }
             }
         }

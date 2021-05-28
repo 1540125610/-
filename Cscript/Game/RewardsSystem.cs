@@ -72,7 +72,7 @@ public class RewardsSystem : MonoBehaviour
             human_.transform.parent = player1.transform;
             human_.GetComponent<HumanControl>().playerName = "Player1";
 
-            playerControl.playerInfo.MilitaryUnits.Add(human);
+            playerControl.playerInfo.MilitaryUnits.Add(human_);
         }
         rewards.SetActive(false);
     }

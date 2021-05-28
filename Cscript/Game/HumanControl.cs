@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class HumanControl : MonoBehaviour
 {
     private Camera mainCamara;
-    public Canvas canvas;
+    private Canvas canvas;
     private Vector3 aimPosition;            //目标地点
     private GridsControl gridsControl;      //导航脚本
     private PlayerControl playerControl;    //玩家控制脚本
@@ -49,7 +49,7 @@ public class HumanControl : MonoBehaviour
         ani = GetComponent<Animator>();
         mainCamara = Camera.main;
         //拿到是否被选中的圈，并关闭它
-        canvas = GetComponentInChildren<Canvas>();
+        canvas = transform.Find("Canvas").GetComponent<Canvas>();
         canvas.gameObject.SetActive(false);
 
         humanState = state.Stand;    //初始状态为待机
@@ -102,8 +102,6 @@ public class HumanControl : MonoBehaviour
     //开启选框
     public void OnSelected(Color color)
     {
-        Debug.Log(canvas);
-
         canvas.GetComponentInChildren<Image>().color = color;   //改变选框颜色
         canvas.gameObject.SetActive(true);
     }
@@ -132,6 +130,7 @@ public class HumanControl : MonoBehaviour
             ani.SetBool("isAttack", false);
         }
         isAttack = false;
+
 
         FindDir();
 
@@ -276,7 +275,7 @@ public class HumanControl : MonoBehaviour
             if (other.gameObject.layer == 10)           //当其为导航基点时
             {
                 GridScript a = other.GetComponent<GridScript>();
-                if (a.isAppropriat  == false)       //未被占用时
+                if (a.isAppropriat  == false && !grids.Contains(a))       //未被占用时且网格中没有该网格时
                 {
                     grids.Add(a);
                 }
@@ -303,6 +302,10 @@ public class HumanControl : MonoBehaviour
     //判断方向
     private void FindDir()
     {
+        if (grids.Count == 0)           //可能在碰撞体没有检测出时，就进行判断方向。此时grids是空的，会导致下标越界
+        {
+            return;
+        }
         GridScript minGrid = grids[0];
 
         //遍历查找最近的网格

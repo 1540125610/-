@@ -149,7 +149,6 @@ public class PlayerControl : MonoBehaviour
 
                             chosenOtherPlayerObj = hit.collider.gameObject;
                             chosenOtherPlayerObj.GetComponent<HumanControl>().OnSelected(Color.red);       //开启其选择框
-
                         }
                     }
                 }

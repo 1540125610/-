@@ -11,6 +11,10 @@ public class Building : MonoBehaviour
     private ResourceSystem resourceManager;    //矿石数
     public int cost = 50;     //建造消耗矿石
 
+    GameObject parent;              //父对象
+    GridsControl gridsControl;      //网格总控制器
+
+
     List<GridScript> grids;                 //当前碰撞的网格
 
     void Start()
@@ -20,6 +24,8 @@ public class Building : MonoBehaviour
         isBuilt = false;
         buildingJudge = judgeArea.GetComponent<BuildingJudge>();
         resourceManager = GameObject.Find("ResourceManager").GetComponent<ResourceSystem>();
+        parent = GameObject.Find("Build Units/Player1");
+        gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();
     }
 
 
@@ -46,9 +52,12 @@ public class Building : MonoBehaviour
             judgeArea.GetComponent<Renderer>().enabled = false;
             resourceManager.minerals -= cost;
 
+            transform.parent = parent.transform;      //修改自己的父对象
+
             GetGrids();     //获取被占据网格
             TellToGrids();  //通知被占据网格关闭自身
 
+            gridsControl.StartRenovate();       //刷新地图
         }
         if (Input.GetMouseButtonDown(1) && !isBuilt)
         {

@@ -49,7 +49,7 @@ public class HumanControl : MonoBehaviour
         ani = GetComponent<Animator>();
         mainCamara = Camera.main;
         //拿到是否被选中的圈，并关闭它
-        canvas = GetComponentInChildren<Canvas>();
+        canvas = transform.Find("Canvas").GetComponent<Canvas>();
         canvas.gameObject.SetActive(false);
 
         humanState = state.Stand;    //初始状态为待机
@@ -130,6 +130,7 @@ public class HumanControl : MonoBehaviour
             ani.SetBool("isAttack", false);
         }
         isAttack = false;
+
 
         FindDir();
 
@@ -243,9 +244,13 @@ public class HumanControl : MonoBehaviour
             GameObject.Find("MakeEnemy").GetComponent<MakeEnemy>().enemyCount--;
             GameObject.Find("GameManager").GetComponent<GameManager>().killedEnemies++;
         }
-        gridsControl.DeleteObj(gameObject, mapIndex,null,false);      //通知导航系统，清除自己
-        playerControl.ObjDie(gameObject,false);            //通知玩家控制系统，清除自己
+        else if(playerName == "Player1")
+        {
+            gridsControl.DeleteObj(gameObject, mapIndex, null, false);      //通知导航系统，清除自己
+            playerControl.ObjDie(gameObject, false);                        //通知玩家控制系统，清除自己            
+        }
         Destroy(gameObject);                               //销毁自身
+
     }
 
     public void GetHurt(int damage)     //受到攻击
@@ -270,7 +275,7 @@ public class HumanControl : MonoBehaviour
             if (other.gameObject.layer == 10)           //当其为导航基点时
             {
                 GridScript a = other.GetComponent<GridScript>();
-                if (a.isAppropriat  == false)       //未被占用时
+                if (a.isAppropriat  == false && !grids.Contains(a))       //未被占用时且网格中没有该网格时
                 {
                     grids.Add(a);
                 }
@@ -297,6 +302,10 @@ public class HumanControl : MonoBehaviour
     //判断方向
     private void FindDir()
     {
+        if (grids.Count == 0)           //可能在碰撞体没有检测出时，就进行判断方向。此时grids是空的，会导致下标越界
+        {
+            return;
+        }
         GridScript minGrid = grids[0];
 
         //遍历查找最近的网格

@@ -115,7 +115,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   judgeArea: {fileID: 414977832409771623}
-  cost: 50
+  cost: 150
+  human: {fileID: 100050, guid: aad05534a7ba0dd49b8c54ce188308ec, type: 3}
+  player1: {fileID: 0}
 --- !u!65 &8815839513811196643
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -241,6 +243,7 @@ MonoBehaviour:
   red: {fileID: 2100000, guid: 8472b91feabc8194bb475ff3f776c645, type: 2}
   canBuild: 1
   building: {fileID: 8432460324437355500}
+  gridsCollider: []
 --- !u!54 &2494010072546889488
 Rigidbody:
   m_ObjectHideFlags: 0

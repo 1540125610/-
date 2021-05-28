@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class HumanControl : MonoBehaviour
 {
     private Camera mainCamara;
-    private Canvas canvas;
+    public Canvas canvas;
     private Vector3 aimPosition;            //目标地点
     private GridsControl gridsControl;      //导航脚本
     private PlayerControl playerControl;    //玩家控制脚本
@@ -102,6 +102,8 @@ public class HumanControl : MonoBehaviour
     //开启选框
     public void OnSelected(Color color)
     {
+        Debug.Log(canvas);
+
         canvas.GetComponentInChildren<Image>().color = color;   //改变选框颜色
         canvas.gameObject.SetActive(true);
     }
@@ -243,9 +245,13 @@ public class HumanControl : MonoBehaviour
             GameObject.Find("MakeEnemy").GetComponent<MakeEnemy>().enemyCount--;
             GameObject.Find("GameManager").GetComponent<GameManager>().killedEnemies++;
         }
-        gridsControl.DeleteObj(gameObject, mapIndex,null,false);      //通知导航系统，清除自己
-        playerControl.ObjDie(gameObject,false);            //通知玩家控制系统，清除自己
+        else if(playerName == "Player1")
+        {
+            gridsControl.DeleteObj(gameObject, mapIndex, null, false);      //通知导航系统，清除自己
+            playerControl.ObjDie(gameObject, false);                        //通知玩家控制系统，清除自己            
+        }
         Destroy(gameObject);                               //销毁自身
+
     }
 
     public void GetHurt(int damage)     //受到攻击

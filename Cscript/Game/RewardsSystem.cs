@@ -17,8 +17,12 @@ public class RewardsSystem : MonoBehaviour
 
     public GameObject human;
     public GameObject player1;
+
+    PlayerControl playerControl;        //玩家控制
     void Start()
     {
+        playerControl = GameObject.Find("Player Control").GetComponent<PlayerControl>();
+
         StartCoroutine("Rewards");
     }
 
@@ -67,6 +71,8 @@ public class RewardsSystem : MonoBehaviour
             GameObject human_ = Instantiate(human, new Vector3(0, -1, 0), Quaternion.identity);
             human_.transform.parent = player1.transform;
             human_.GetComponent<HumanControl>().playerName = "Player1";
+
+            playerControl.playerInfo.MilitaryUnits.Add(human);
         }
         rewards.SetActive(false);
     }

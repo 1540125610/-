@@ -23,7 +23,7 @@ public class PlayerControl : MonoBehaviour
 
     string playerName;   //玩家名字
     GameManage gameManage;              //总信息类
-    GameInfo playerInfo;                //玩家信息
+    public GameInfo playerInfo;                //玩家信息
     int playerNum;                      //玩家编号
     GridsControl gridsControl;          //网格控制器
 
@@ -128,7 +128,6 @@ public class PlayerControl : MonoBehaviour
                         }
                         else if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))  // 按下ctrl(剔除单位)
                         {
-                            
                             if (chosenObj.Contains(hit.collider.gameObject))          //是已选择的目标
                             {
                                 DeleteChosenObj(hit.collider.gameObject);
@@ -183,7 +182,6 @@ public class PlayerControl : MonoBehaviour
     {
         Vector3 lowerLeftPos = new Vector3(Mathf.Min(startPos.x, endPos.x), Mathf.Min(startPos.y, endPos.y), 0);         //框左下角点
         Vector3 upperRightPos = new Vector3(Mathf.Max(startPos.x, endPos.x), Mathf.Max(startPos.y, endPos.y), 0);        //框右上角点
-
 
         foreach (GameObject unit in playerInfo.MilitaryUnits)
         {
@@ -277,6 +275,9 @@ public class PlayerControl : MonoBehaviour
 
             chosenObj.Remove(obj);      //从选择列表中剔除该单位
         }
+
+        //清理玩家所属的作战单位列表
+        playerInfo.MilitaryUnits.Remove(obj);
     } 
     
 }

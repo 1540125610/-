@@ -15,7 +15,7 @@ public class MenuManager : MonoBehaviour
     {
         ani_1.SetBool("isAttack", true);
         ani_2.SetBool("isAttack", true);
-        Invoke("StartGame", 2f);
+        Invoke("StartGame", 1f);
     }
     public void ExitGame()       //离开游戏关闭软件
     {

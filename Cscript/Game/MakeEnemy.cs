@@ -18,13 +18,29 @@ public class MakeEnemy : MonoBehaviour
         while(true)
         {
             yield return new WaitForSeconds(2f);
-            float x = Random.Range(-50, 50);
-            float z = Random.Range(-50, 50);
-            GameObject theEnemy = Instantiate(enemy, new Vector3(x, -1, z), Quaternion.identity);
-            theEnemy.transform.parent = player2.transform;
-            theEnemy.GetComponent<HumanControl>().playerName = "Player2";
-            enemyCount++;
-            
+            while (true)
+            {
+                float x = Random.Range(-50, 50);
+                float z = Random.Range(-50, 50);
+                Vector3 position = new Vector3(x, -1, z);
+                Collider[] colliderObj = Physics.OverlapSphere(position, 2f);
+                bool canMake = true;
+                foreach (Collider c in colliderObj)
+                {
+                    if (c.tag == "Military Units")
+                    {
+                        canMake = false;
+                    }
+                }
+                if (canMake)
+                {
+                    GameObject theEnemy = Instantiate(enemy, position, Quaternion.identity);
+                    theEnemy.transform.parent = player2.transform;
+                    theEnemy.GetComponent<HumanControl>().playerName = "Player2";
+                    enemyCount++;
+                    break;
+                }
+            }
         }
     }
 }

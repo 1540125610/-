@@ -29,7 +29,8 @@ public class HumanControl : MonoBehaviour
     List<GridScript> grids;       //当前碰撞到的网格
 
     private Animator ani;
-     enum state
+    public Texture2D blood_red;         //2D血条
+    enum state
     {
         Stand,    //待机
         Move,     //移动
@@ -52,10 +53,13 @@ public class HumanControl : MonoBehaviour
         canvas = transform.Find("Canvas").GetComponent<Canvas>();
         canvas.gameObject.SetActive(false);
 
+        attack = 20;   //初始攻击力为20
+        maxHp = 100;   //最大生命值为100
         humanState = state.Stand;    //初始状态为待机
         currentHp = maxHp;          //默认初始生命值最大
         moveSpeed = 3f;               //移动速度默认为3
         turningSpeed = 1; ;             //转身速度默认为1
+
     }
 
     
@@ -322,5 +326,24 @@ public class HumanControl : MonoBehaviour
         }
 
         dir = minGrid.maps[mapIndex].direction;
+    }
+    //血条
+    private void OnGUI()
+    {
+        if (currentHp < maxHp)
+        {
+            Vector2 hpPosition = Camera.main.WorldToScreenPoint(transform.position);
+            hpPosition = new Vector2(hpPosition.x, Screen.height - hpPosition.y);
+            Vector2 bloodSize = GUI.skin.label.CalcSize(new GUIContent(blood_red));
+
+            if (currentHp < 0)
+            {
+                currentHp = 0;
+            }
+            int bloodWidth = blood_red.width * 100 / 200;
+
+            GUI.DrawTexture(new Rect(hpPosition.x - (bloodSize.x / 10), hpPosition.y - bloodSize.y / 4, (bloodWidth - bloodSize.x / 3) * currentHp / 100*3, bloodSize.y / 15), blood_red);
+        }
+
     }
 }

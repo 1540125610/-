@@ -893,6 +893,7 @@ MonoBehaviour:
   turningSpeed: 0
   mapIndex: -1
   dir: 0
+  blood_red: {fileID: 2800000, guid: 768949a36c4b57645a90777215187cda, type: 3}
 --- !u!136 &3424012122524887029
 CapsuleCollider:
   m_ObjectHideFlags: 0

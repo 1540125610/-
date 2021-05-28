@@ -151,6 +151,11 @@ public class GridsControl : MonoBehaviour
         {
             if (objsGo[a].used)         //当该地图被使用时
             {
+                foreach(GridScript b in gridScripts)        //先清空地图数据
+                {
+                    b.maps[a].allHinderNum = 0;
+                }
+
                 objsGo[a].aimGrid.MapStart(a); //将开始寻路传递给目标方格
             }
         }

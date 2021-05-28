@@ -20,8 +20,8 @@ public class MakeEnemy : MonoBehaviour
             yield return new WaitForSeconds(2f);
             while (true)
             {
-                float x = Random.Range(-50, 50);
-                float z = Random.Range(-50, 50);
+                float x = Random.Range(-45, 45);
+                float z = Random.Range(-45, 45);
                 Vector3 position = new Vector3(x, -1, z);
                 Collider[] colliderObj = Physics.OverlapSphere(position, 2f);
                 bool canMake = true;

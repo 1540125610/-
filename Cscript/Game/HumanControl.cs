@@ -241,6 +241,7 @@ public class HumanControl : MonoBehaviour
         if(playerName=="Player2")
         {
             GameObject.Find("MakeEnemy").GetComponent<MakeEnemy>().enemyCount--;
+            GameObject.Find("GameManager").GetComponent<GameManager>().killedEnemies++;
         }
         gridsControl.DeleteObj(gameObject, mapIndex,null,false);      //通知导航系统，清除自己
         playerControl.ObjDie(gameObject,false);            //通知玩家控制系统，清除自己

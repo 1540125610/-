@@ -54,7 +54,7 @@ public class HumanControl : MonoBehaviour
 
         humanState = state.Stand;    //初始状态为待机
         currentHp = maxHp;          //默认初始生命值最大
-        moveSpeed = 1.5f;               //移动速度默认为1.5
+        moveSpeed = 3f;               //移动速度默认为3
         turningSpeed = 1; ;             //转身速度默认为1
     }
 

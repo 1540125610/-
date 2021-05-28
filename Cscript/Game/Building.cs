@@ -82,14 +82,14 @@ public class Building : MonoBehaviour
         }
     }
 
-
+    //自动生产
     IEnumerator CreateHuman()
     {
         while (true)
         {
             yield return new WaitForSeconds(1f);
 
-            if (resourceManager.coins > 10)
+            if (resourceManager.coins > 20)     //有20金币时开始生产
             {
                 resourceManager.coins -= 20;
 

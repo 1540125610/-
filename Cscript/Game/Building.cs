@@ -8,14 +8,20 @@ public class Building : MonoBehaviour
     private Vector3 currentPosition;     //跟随鼠标位置
     public GameObject judgeArea;     //判定区域
     private BuildingJudge buildingJudge;
-    private ResourceSystem resourceManager;    //矿石数
-    public int cost = 50;     //建造消耗矿石
+    private ResourceSystem resourceManager;    //资源脚本
+    public int cost = 150;     //建造消耗矿石
 
     GameObject parent;              //父对象
     GridsControl gridsControl;      //网格总控制器
 
 
     List<GridScript> grids;                 //当前碰撞的网格
+
+    private bool isCreate = false;              //是否开始生产
+    public GameObject human;            //生产的士兵
+    public GameObject player1;
+
+    PlayerControl playerControl;        //玩家控制
 
     void Start()
     {
@@ -26,6 +32,9 @@ public class Building : MonoBehaviour
         resourceManager = GameObject.Find("ResourceManager").GetComponent<ResourceSystem>();
         parent = GameObject.Find("Build Units/Player1");
         gridsControl = GameObject.Find("Grids Control").GetComponent<GridsControl>();
+
+        playerControl = GameObject.Find("Player Control").GetComponent<PlayerControl>();
+        player1 = GameObject.Find("Military Units/Player1");
     }
 
 
@@ -63,6 +72,37 @@ public class Building : MonoBehaviour
         {
             buildingJudge.outBuilding();
             Destroy(gameObject);
+        }
+
+
+        if (isBuilt && !isCreate)       //在已创建且未生产的前提下
+        {
+            isCreate = true;
+            StartCoroutine(CreateHuman());     //开启新的协程
+        }
+    }
+
+
+    IEnumerator CreateHuman()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (resourceManager.coins > 10)
+            {
+                resourceManager.coins -= 20;
+
+                GameObject human_ = GameObject.Instantiate(human, transform.position + new Vector3(-5, 0, -8), Quaternion.identity);
+                human_.transform.parent = player1.transform;
+                human_.GetComponent<HumanControl>().playerName = "Player1";
+
+                playerControl.playerInfo.MilitaryUnits.Add(human_);
+
+                yield return new WaitForSeconds(4f);
+            }
+
+            
         }
     }
 

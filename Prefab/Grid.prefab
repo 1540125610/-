@@ -63,7 +63,7 @@ MonoBehaviour:
   canMove: 
   gridsControl: {fileID: 0}
   hinderNum: 1
-  isSee: 1
+  isSee: 0
   See: {fileID: 0}
 --- !u!1 &6219811529607864254
 GameObject:
